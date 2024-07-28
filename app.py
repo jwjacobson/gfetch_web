@@ -1,11 +1,18 @@
 import os
+
+from flask import Flask
+from decouple import config 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-RAW_EMAIL_DIR = 'raw_emails'
-CLEANED_EMAIL_DIR = 'cleaned_emails'
+app = Flask(__name__)
+
+SECRET_KEY = config('SECRET_KEY')
+SCOPES = config('SCOPES')
+RAW_EMAIL_DIR = config('RAW_EMAIL_DIR')
+CLEANED_EMAIL_DIR = config('CLEANED_EMAIL_DIR')
+
 
 def get_credentials():
     creds = None
