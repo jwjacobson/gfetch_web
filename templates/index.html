@@ -10,5 +10,14 @@
         <input type="email" id="email_address" name="email_address" required>
         <button type="submit">Fetch Emails</button>
     </form>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 </body>
 </html>

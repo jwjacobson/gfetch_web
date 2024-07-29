@@ -9,8 +9,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 import ipdb
 
 app = Flask(__name__)
+app.secret_key = config("SECRET_KEY")
 
-SECRET_KEY = config("SECRET_KEY")
 SCOPES = config("SCOPES")
 RAW_EMAIL_DIR = config("RAW_EMAIL_DIR")
 CLEANED_EMAIL_DIR = config("CLEANED_EMAIL_DIR")
@@ -49,7 +49,8 @@ def get_credentials():
 def index():
     if request.method == 'POST':
         email_address = request.form
-
+        flash(f"Processing emails for {email_address}")
+        return redirect(url_for('index'))
 
     return render_template('index.html')
 
