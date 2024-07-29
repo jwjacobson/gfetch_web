@@ -16,15 +16,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-import os
 import base64
+import os
 
+from clean_emails import clean_email_file
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-
-from clean_emails import clean_email_file
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 

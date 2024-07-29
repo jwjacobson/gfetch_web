@@ -1,0 +1,42 @@
+[project]
+name = "gfetch"
+version = "0.0.1"
+dependencies = [
+    "flask",
+    "google-auth",
+    "google-auth-oauthlib",
+    "google-auth-httplib2",
+    "google-api-python-client",
+    "python-decouple"
+]
+requires-python = ">=3.12"
+authors = [
+  { name="Jeff Jacobson", email="jeffjacobsonhimself@gmail.com" },
+]
+description = "Back up your gmail emails"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["gmail", "backup"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Flask",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+]
+
+[project.urls]
+Homepage = "https://github.com/jwjacobson/gfetch_web"
+Issues = "https://github.com/jwjacobson/gfetch_web/issues"
+
+[tool.ruff.lint]
+extend-select = ["I"]
