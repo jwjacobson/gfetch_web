@@ -26,21 +26,22 @@ from googleapiclient.discovery import build
 
 from clean_emails import clean_email_file
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
-RAW_EMAIL_DIR = 'raw_emails'
-CLEANED_EMAIL_DIR = 'cleaned_emails'
+RAW_EMAIL_DIR = "raw_emails"
+CLEANED_EMAIL_DIR = "cleaned_emails"
+
 
 def get_credentials():
     """
     Load or obtain new credentials for the Google API.
     """
     creds = None
-    if os.path.exists('token.json'):
+    if os.path.exists("token.json"):
         try:
-            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+            creds = Credentials.from_authorized_user_file("token.json", SCOPES)
         except Exception as e:
-            print(f'Error loading credentials: {e}')
+            print(f"Error loading credentials: {e}")
             creds = None
 
     if not creds or not creds.valid:
@@ -48,42 +49,46 @@ def get_credentials():
             try:
                 creds.refresh(Request())
             except Exception as e:
-                print(f'Error refreshing credentials: {e}')
+                print(f"Error refreshing credentials: {e}")
 
         if not creds:
             try:
-                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    "credentials.json", SCOPES
+                )
                 creds = flow.run_local_server(port=0)
-                with open('token.json', 'w') as token:
+                with open("token.json", "w") as token:
                     token.write(creds.to_json())
             except Exception as e:
-                print(f'Error during OAuth flow: {e}')
+                print(f"Error during OAuth flow: {e}")
                 return None
 
     return creds
+
 
 def main(email_address):
     """
     Download all emails to or from EMAIL_ADDRESS. Save the raw .eml files to RAW_EMAIL_DIR and the the cleaned ones to CLEANED_EMAIL_DIR.
     """
     if not email_address:
-        email_address = input("Enter the gmail address whose correspondence you want to back up: ")
+        email_address = input(
+            "Enter the gmail address whose correspondence you want to back up: "
+        )
 
-    if email_address.split('@')[1] != "gmail.com":
+    if email_address.split("@")[1] != "gmail.com":
         raise ValueError("This script only works for gmail addresses.")
 
     creds = get_credentials()
 
     if not creds:
-        print('Failed to obtain credentials.')
+        print("Failed to obtain credentials.")
         return
 
     try:
-        service = build('gmail', 'v1', credentials=creds)
+        service = build("gmail", "v1", credentials=creds)
     except Exception as e:
-        print(f'Error building Gmail service: {e}')
+        print(f"Error building Gmail service: {e}")
         return
-
 
     if not os.path.exists(RAW_EMAIL_DIR):
         os.makedirs(RAW_EMAIL_DIR)
@@ -93,24 +98,36 @@ def main(email_address):
 
     while True:
         if next_page_token:
-            results = service.users().messages().list(userId='me', q=query, pageToken=next_page_token).execute()
+            results = (
+                service.users()
+                .messages()
+                .list(userId="me", q=query, pageToken=next_page_token)
+                .execute()
+            )
         else:
-            results = service.users().messages().list(userId='me', q=query).execute()
-        
-        messages = results.get('messages', [])
-        next_page_token = results.get('nextPageToken', None)
+            results = service.users().messages().list(userId="me", q=query).execute()
+
+        messages = results.get("messages", [])
+        next_page_token = results.get("nextPageToken", None)
 
         if not messages:
-            print('No more messages found.')
+            print("No more messages found.")
             break
         else:
-            print(f'Found {len(messages)} messages.')
+            print(f"Found {len(messages)} messages.")
             for message in messages:
-                msg = service.users().messages().get(userId='me', id=message['id'], format='raw').execute()
+                msg = (
+                    service.users()
+                    .messages()
+                    .get(userId="me", id=message["id"], format="raw")
+                    .execute()
+                )
 
-                msg_str = base64.urlsafe_b64decode(msg['raw'].encode('ASCII'))
-                raw_email_path = os.path.join(RAW_EMAIL_DIR, f'email_{message["id"]}.eml')
-                with open(raw_email_path, 'wb') as f:
+                msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
+                raw_email_path = os.path.join(
+                    RAW_EMAIL_DIR, f'email_{message["id"]}.eml'
+                )
+                with open(raw_email_path, "wb") as f:
                     f.write(msg_str)
                 print(f'Saved raw email_{message["id"]}.eml')
 
@@ -120,6 +137,9 @@ def main(email_address):
         if not next_page_token:
             break
 
-if __name__ == '__main__':
-    EMAIL_ADDRESS = input("Enter the gmail address whose correspondence you want to back up: ")
+
+if __name__ == "__main__":
+    EMAIL_ADDRESS = input(
+        "Enter the gmail address whose correspondence you want to back up: "
+    )
     main(EMAIL_ADDRESS)

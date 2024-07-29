@@ -20,70 +20,89 @@ import os
 import email
 from email import policy
 from email.parser import BytesParser
-from datetime import datetime
 
-OUTPUT_DIR = 'cleaned_emails'
+OUTPUT_DIR = "cleaned_emails"
+
 
 def clean_email_file(email_file):
     """
     Take an eml file and output a cleaned txt file.
     """
-    with open(email_file, 'rb') as f:
+    with open(email_file, "rb") as f:
         msg = BytesParser(policy=policy.default).parse(f)
 
-    date = msg['Date']
-    subject = msg['Subject']
-    to = msg['To']
-    from_ = msg['From']
+    date = msg["Date"]
+    subject = msg["Subject"]
+    to = msg["To"]
+    from_ = msg["From"]
 
     date_obj = email.utils.parsedate_to_datetime(date)
     formatted_date = date_obj.strftime("%Y-%m-%d")
 
     if not subject:
-        formatted_subj = 'no_subject'
+        formatted_subj = "no_subject"
     else:
         subj_list = []
-        puncts = {',', ' ', '.', '—', '-', "'", '"', ":", ";", "!", "?", "(", ")", "/", "\\"}
+        puncts = {
+            ",",
+            " ",
+            ".",
+            "—",
+            "-",
+            "'",
+            '"',
+            ":",
+            ";",
+            "!",
+            "?",
+            "(",
+            ")",
+            "/",
+            "\\",
+        }
         for char in subject:
             if char in puncts:
                 continue
             elif char == " ":
-                subj_list.append('_')
+                subj_list.append("_")
             else:
                 subj_list.append(char.lower())
 
-        formatted_subj = ''.join(subj_list)
+        formatted_subj = "".join(subj_list)
 
     body = ""
 
     if msg.is_multipart():
         for part in msg.iter_parts():
-            if part.get_content_type() == 'text/plain':
+            if part.get_content_type() == "text/plain":
                 charset = part.get_content_charset()
                 if charset is None:
-                    charset = 'utf-8'
-                body = part.get_payload(decode=True).decode(charset, errors='replace')
+                    charset = "utf-8"
+                body = part.get_payload(decode=True).decode(charset, errors="replace")
                 break
     else:
         charset = msg.get_content_charset()
         if charset is None:
-            charset = 'utf-8'
-        body = msg.get_payload(decode=True).decode(charset, errors='replace')
+            charset = "utf-8"
+        body = msg.get_payload(decode=True).decode(charset, errors="replace")
 
     if not body:
         body = "This email has no text in the body. Maybe it was just an attachment?"
 
-    body = body.split('\nOn ')[0]
+    body = body.split("\nOn ")[0]
 
-    email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n\n{body}"
+    email_content = (
+        f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n\n{body}"
+    )
 
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
     email_filename = os.path.join(OUTPUT_DIR, f"{formatted_date}__{formatted_subj}.txt")
-    with open(email_filename, 'w', encoding='utf-8') as f:
+    with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
 
-if __name__ == '__main__':
-    OUTPUT_DIR = '.'
-    clean_email_file('sample_raw.eml')
+
+if __name__ == "__main__":
+    OUTPUT_DIR = "."
+    clean_email_file("sample_raw.eml")
