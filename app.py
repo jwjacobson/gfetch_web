@@ -1,7 +1,7 @@
 import os
 
 from decouple import config
-from flask import Flask
+from flask import Flask, render_template
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -42,3 +42,10 @@ def get_credentials():
                 return None
 
     return creds
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
