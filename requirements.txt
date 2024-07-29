@@ -4,6 +4,8 @@
 #
 #    pip-compile
 #
+asttokens==2.4.1
+    # via stack-data
 blinker==1.8.2
     # via flask
 cachetools==5.4.0
@@ -14,6 +16,12 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via flask
+decorator==5.1.1
+    # via
+    #   ipdb
+    #   ipython
+executing==2.0.1
+    # via stack-data
 flask==3.0.3
     # via -r requirements.in
 google-api-core==2.19.1
@@ -41,16 +49,30 @@ httplib2==0.22.0
     #   google-auth-httplib2
 idna==3.7
     # via requests
+ipdb==0.13.13
+    # via -r requirements.in
+ipython==8.26.0
+    # via ipdb
 itsdangerous==2.2.0
     # via flask
+jedi==0.19.1
+    # via ipython
 jinja2==3.1.4
     # via flask
 markupsafe==2.1.5
     # via
     #   jinja2
     #   werkzeug
+matplotlib-inline==0.1.7
+    # via ipython
 oauthlib==3.2.2
     # via requests-oauthlib
+parso==0.8.4
+    # via jedi
+pexpect==4.9.0
+    # via ipython
+prompt-toolkit==3.0.47
+    # via ipython
 proto-plus==1.24.0
     # via google-api-core
 protobuf==5.27.2
@@ -58,12 +80,18 @@ protobuf==5.27.2
     #   google-api-core
     #   googleapis-common-protos
     #   proto-plus
+ptyprocess==0.7.0
+    # via pexpect
+pure-eval==0.2.3
+    # via stack-data
 pyasn1==0.6.0
     # via
     #   pyasn1-modules
     #   rsa
 pyasn1-modules==0.4.0
     # via google-auth
+pygments==2.18.0
+    # via ipython
 pyparsing==3.1.2
     # via httplib2
 python-decouple==3.8
@@ -78,9 +106,19 @@ rsa==4.9
     # via google-auth
 ruff==0.5.5
     # via -r requirements.in
+six==1.16.0
+    # via asttokens
+stack-data==0.6.3
+    # via ipython
+traitlets==5.14.3
+    # via
+    #   ipython
+    #   matplotlib-inline
 uritemplate==4.1.1
     # via google-api-python-client
 urllib3==2.2.2
     # via requests
+wcwidth==0.2.13
+    # via prompt-toolkit
 werkzeug==3.0.3
     # via flask

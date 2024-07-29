@@ -1,10 +1,12 @@
 import os
 
 from decouple import config
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+
+import ipdb
 
 app = Flask(__name__)
 
@@ -43,8 +45,12 @@ def get_credentials():
 
     return creds
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        email_address = request.form
+
+
     return render_template('index.html')
 
 if __name__ == '__main__':
