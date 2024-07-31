@@ -6,3 +6,5 @@ google-api-python-client
 python-decouple
 ruff
 ipdb
+pytest
+pytest-cov

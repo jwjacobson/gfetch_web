@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 
 import ipdb
 
@@ -49,6 +50,18 @@ def get_credentials():
 def index():
     if request.method == 'POST':
         email_address = request.form
+
+        creds = get_credentials()
+        if not creds:
+            flash('Failed to obtain credentials.')
+            return redirect(url_for('index'))
+
+        try:
+            service = build('gmail', 'v1', credentials=creds)
+        except Exception as e:
+            flash(f'Error building Gmail service: {e}')
+            return redirect(url_for('index'))
+
         flash(f"Processing emails for {email_address}")
         return redirect(url_for('index'))
 
