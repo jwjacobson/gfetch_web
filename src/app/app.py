@@ -15,13 +15,14 @@ app.secret_key = config("SECRET_KEY")
 SCOPES = config("SCOPES")
 RAW_EMAIL_DIR = config("RAW_EMAIL_DIR")
 CLEANED_EMAIL_DIR = config("CLEANED_EMAIL_DIR")
-
+CREDS = config("CREDS")
+TOKEN = config("TOKEN")
 
 def get_credentials():
     creds = None
-    if os.path.exists("token.json"):
+    if os.path.exists(TOKEN):
         try:
-            creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+            creds = Credentials.from_authorized_user_file(TOKEN, SCOPES)
         except Exception as e:
             print(f"Error loading credentials: {e}")
 
@@ -35,7 +36,7 @@ def get_credentials():
         if not creds:
             try:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", SCOPES
+                    CREDS, SCOPES
                 )
                 creds = flow.run_local_server(port=0)
                 with open("token.json", "w") as token:
@@ -68,4 +69,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
