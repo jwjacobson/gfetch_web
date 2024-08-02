@@ -20,9 +20,9 @@ import email
 import os
 from email import policy
 from email.parser import BytesParser
+from decouple import config
 
-OUTPUT_DIR = "cleaned_emails"
-
+OUTPUT_DIR = config("CLEANED_EMAIL_DIR")
 
 def clean_email_file(email_file):
     """

@@ -17,7 +17,6 @@ app.secret_key = config("SECRET_KEY")
 
 SCOPES = config("SCOPES")
 RAW_EMAIL_DIR = config("RAW_EMAIL_DIR")
-CLEANED_EMAIL_DIR = config("CLEANED_EMAIL_DIR")
 CREDS = config("CREDS")
 TOKEN = config("TOKEN")
 
@@ -42,7 +41,7 @@ def get_credentials():
                     CREDS, SCOPES
                 )
                 creds = flow.run_local_server(port=0)
-                with open("token.json", "w") as token:
+                with open(TOKEN, "w") as token:
                     token.write(creds.to_json())
             except Exception as e:
                 print(f"Error during OAuth flow: {e}")
