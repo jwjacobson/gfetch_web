@@ -50,7 +50,7 @@ def get_credentials():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        email_address = request.form
+        email_address = request.form['email_address']
 
         creds = get_credentials()
         if not creds:
@@ -62,6 +62,9 @@ def index():
         except Exception as e:
             flash(f'Error building Gmail service: {e}')
             return redirect(url_for('index'))
+
+        if not os.path.exists(RAW_EMAIL_DIR):
+            os.makedirs(RAW_EMAIL_DIR)
 
         flash(f"Processing emails for {email_address}")
         return redirect(url_for('index'))
