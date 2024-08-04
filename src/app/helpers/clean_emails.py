@@ -35,6 +35,13 @@ def clean_email_file(email_file):
     subject = msg["Subject"]
     to = msg["To"]
     from_ = msg["From"]
+    has_attachment = False
+
+    if msg.is_multipart():
+        for part in msg.iter_parts():
+            if part.get_content_disposition() == "attachment":
+                has_attachment = True
+                break
 
     if date:
         try:
