@@ -45,6 +45,11 @@ def clean_email_file(email_file):
         for part in msg.iter_parts():
             if part.get_content_disposition() == "attachment":
                 has_attachment = True
+                filename = part.get_filename()
+                if filename:
+                    filepath = os.path.join(ATTACHMENTS_DIR, filename)
+                    with open(filepath, "wb") as attachment_file:
+                        attachment_file.write(part.get_payload(decode=True))
                 break
 
     if date:
