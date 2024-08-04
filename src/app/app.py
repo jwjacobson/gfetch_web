@@ -97,5 +97,9 @@ def index():
 
     return render_template('index.html')
 
+@app.route('/delete/', methods=['DELETE'])
+def delete_files():
+    pass
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
