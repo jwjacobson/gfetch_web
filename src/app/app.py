@@ -110,16 +110,28 @@ def index():
 @app.route('/delete/', methods=['POST'])
 def delete_files():
     attachments = os.listdir(ATTACHMENTS_DIR)
+    clean_emails = [email for email in os.listdir(CLEANED_EMAIL_DIR) if email.endswith(".txt")]
+    
     if not attachments:
         print("No attachments found.")
     else:
-        file_count = len(attachments)
-        print(f"Found {file_count} attachments.")
+        attachment_count = len(attachments)
+        print(f"Found {attachment_count} attachments.")
         for attachment in attachments:
             print(f'Deleting {attachment}.')
             attachment_path = os.path.join(ATTACHMENTS_DIR, attachment)
             os.remove(attachment_path)
     
+    if not clean_emails:
+        print("No cleaned emails found.")
+    else:
+        clean_count = len(clean_emails)
+        print(f"Found {clean_count} cleaned emails.")
+        for email in clean_emails:
+            print(f'Deleting {email}.')
+            clean_path = os.path.join(CLEANED_EMAIL_DIR, email)
+            os.remove(clean_path)
+
     return redirect(url_for('index'))
 
 
