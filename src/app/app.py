@@ -114,32 +114,32 @@ def delete_files():
     raw_emails = [email for email in os.listdir(RAW_EMAIL_DIR) if email.endswith(".eml")]
     
     if not attachments:
-        print("No attachments found.")
+        flash("No attachments found.")
     else:
         attachment_count = len(attachments)
-        print(f"Found {attachment_count} attachments.")
+        flash(f"Found {attachment_count} attachments.")
         for attachment in attachments:
-            print(f'Deleting {attachment}.')
+            flash(f'Deleting {attachment}.')
             attachment_path = os.path.join(ATTACHMENTS_DIR, attachment)
             os.remove(attachment_path)
     
     if not clean_emails:
-        print("No cleaned emails found.")
+        flash("No cleaned emails found.")
     else:
         clean_count = len(clean_emails)
-        print(f"Found {clean_count} cleaned emails.")
+        flash(f"Found {clean_count} cleaned emails.")
         for email in clean_emails:
-            print(f'Deleting {email}.')
+            flash(f'Deleting {email}.')
             clean_path = os.path.join(CLEANED_EMAIL_DIR, email)
             os.remove(clean_path)
 
     if not raw_emails:
-        print("No raw emails found.")
+        flash("No raw emails found.")
     else:
         raw_count = len(raw_emails)
-        print(f"Found {raw_count} raw emails.")
+        flash(f"Found {raw_count} raw emails.")
         for email in raw_emails:
-            print(f'Deleting {email}.')
+            flash(f'Deleting {email}.')
             raw_path = os.path.join(RAW_EMAIL_DIR, email)
             os.remove(raw_path)
 
