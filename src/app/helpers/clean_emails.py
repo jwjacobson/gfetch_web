@@ -37,6 +37,7 @@ def clean_email_file(email_file):
     subject = msg["Subject"]
     to = msg["To"]
     from_ = msg["From"]
+    attachments = []
 
     if not os.path.exists(ATTACHMENTS_DIR):
         os.makedirs(ATTACHMENTS_DIR)
@@ -46,6 +47,7 @@ def clean_email_file(email_file):
             if part.get_content_disposition() == "attachment":
                 filename = part.get_filename()
                 if filename:
+                    attachments.append(filename)
                     filepath = os.path.join(ATTACHMENTS_DIR, filename)
                     with open(filepath, "wb") as attachment_file:
                         attachment_file.write(part.get_payload(decode=True))
@@ -109,13 +111,22 @@ def clean_email_file(email_file):
         body = msg.get_payload(decode=True).decode(charset, errors="replace")
 
     if not body:
-        body = "This email has no text in the body. Maybe it was just an attachment?"
+        body = "This email has no text in the body. Maybe it contained only an attachment?"
 
     body = body.split("\nOn ")[0]
 
     email_content = (
-        f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n\n{body}"
+        f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
     )
+
+    if attachments:
+        email_content += "ATTACHMENTS:\n"
+        for attachment in attachments:
+            email_content += f"- {attachment}\n"
+    else:
+        email_content += "ATTACHMENTS: None\n"
+
+    email_content += f"\n{body}"
 
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
