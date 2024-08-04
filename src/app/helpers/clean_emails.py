@@ -20,6 +20,7 @@ import email
 import os
 from email import policy
 from email.parser import BytesParser
+
 from decouple import config
 
 OUTPUT_DIR = config("CLEANED_EMAIL_DIR")
@@ -36,7 +37,6 @@ def clean_email_file(email_file):
     subject = msg["Subject"]
     to = msg["To"]
     from_ = msg["From"]
-    has_attachment = False
 
     if not os.path.exists(ATTACHMENTS_DIR):
         os.makedirs(ATTACHMENTS_DIR)
@@ -44,7 +44,6 @@ def clean_email_file(email_file):
     if msg.is_multipart():
         for part in msg.iter_parts():
             if part.get_content_disposition() == "attachment":
-                has_attachment = True
                 filename = part.get_filename()
                 if filename:
                     filepath = os.path.join(ATTACHMENTS_DIR, filename)
