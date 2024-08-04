@@ -14,6 +14,8 @@ app.secret_key = config("SECRET_KEY")
 
 SCOPES = config("SCOPES")
 RAW_EMAIL_DIR = config("RAW_EMAIL_DIR")
+CLEANED_EMAIL_DIR = config("CLEANED_EMAIL_DIR")
+ATTACHMENTS_DIR = config("ATTACHMENTS_DIR")
 CREDS = config("CREDS")
 TOKEN = config("TOKEN")
 
@@ -97,9 +99,16 @@ def index():
 
     return render_template('index.html')
 
-@app.route('/delete/', methods=['DELETE'])
+@app.route('/delete/', methods=['POST'])
 def delete_files():
-    pass
+    if os.path.exists(ATTACHMENTS_DIR):
+        print(f'Attachments dir exists: {ATTACHMENTS_DIR}')
+    else:
+        print('No attachments dir found.')
+    
+    return redirect(url_for('index'))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

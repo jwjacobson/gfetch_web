@@ -10,6 +10,9 @@
         <input type="email" id="email_address" name="email_address" required>
         <button type="submit">Fetch Emails</button>
     </form>
+    <form method="POST" action="{{ url_for('delete_files') }}">
+      <button type="submit">Delete downloaded files</button>
+    </form>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
       <ul>
