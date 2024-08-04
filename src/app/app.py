@@ -19,6 +19,16 @@ ATTACHMENTS_DIR = config("ATTACHMENTS_DIR")
 CREDS = config("CREDS")
 TOKEN = config("TOKEN")
 
+def create_dirs():
+    if not os.path.exists(RAW_EMAIL_DIR):
+        os.makedirs(RAW_EMAIL_DIR)
+    if not os.path.exists(CLEANED_EMAIL_DIR):
+        os.makedirs(CLEANED_EMAIL_DIR)
+    if not os.path.exists(ATTACHMENTS_DIR):
+        os.makedirs(ATTACHMENTS_DIR)
+
+create_dirs()
+
 def get_credentials():
     creds = None
     if os.path.exists(TOKEN):
@@ -64,8 +74,6 @@ def index():
             flash(f'Error building Gmail service: {e}')
             return redirect(url_for('index'))
 
-        if not os.path.exists(RAW_EMAIL_DIR):
-            os.makedirs(RAW_EMAIL_DIR)
 
         query = f"to:{email_address} OR from:{email_address}"
         next_page_token = None

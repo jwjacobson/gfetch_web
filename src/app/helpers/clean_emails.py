@@ -39,9 +39,6 @@ def clean_email_file(email_file):
     from_ = msg["From"]
     attachments = []
 
-    if not os.path.exists(ATTACHMENTS_DIR):
-        os.makedirs(ATTACHMENTS_DIR)
-
     if msg.is_multipart():
         for part in msg.iter_parts():
             if part.get_content_disposition() == "attachment":
@@ -127,9 +124,6 @@ def clean_email_file(email_file):
         email_content += "ATTACHMENTS: None\n"
 
     email_content += f"\n{body}"
-
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
 
     email_filename = os.path.join(OUTPUT_DIR, f"{formatted_date}__{formatted_subj}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
