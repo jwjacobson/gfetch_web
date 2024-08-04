@@ -111,6 +111,7 @@ def index():
 def delete_files():
     attachments = os.listdir(ATTACHMENTS_DIR)
     clean_emails = [email for email in os.listdir(CLEANED_EMAIL_DIR) if email.endswith(".txt")]
+    raw_emails = [email for email in os.listdir(RAW_EMAIL_DIR) if email.endswith(".eml")]
     
     if not attachments:
         print("No attachments found.")
@@ -131,6 +132,16 @@ def delete_files():
             print(f'Deleting {email}.')
             clean_path = os.path.join(CLEANED_EMAIL_DIR, email)
             os.remove(clean_path)
+
+    if not raw_emails:
+        print("No raw emails found.")
+    else:
+        raw_count = len(raw_emails)
+        print(f"Found {raw_count} raw emails.")
+        for email in raw_emails:
+            print(f'Deleting {email}.')
+            raw_path = os.path.join(RAW_EMAIL_DIR, email)
+            os.remove(raw_path)
 
     return redirect(url_for('index'))
 
