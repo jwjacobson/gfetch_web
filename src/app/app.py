@@ -3,6 +3,7 @@ import os
 
 from decouple import config
 from flask import Flask, flash, redirect, render_template, request, url_for
+from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -36,13 +37,22 @@ def get_credentials():
             creds = Credentials.from_authorized_user_file(TOKEN, SCOPES)
         except Exception as e:
             print(f"Error loading credentials: {e}")
+            creds = None
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
             except Exception as e:
-                print(f"Error refreshing credentials: {e}")
+                if 'invalid_scope' in str(e):
+                    print(f"Invalid scope detected: {e}")
+                    if os.path.exists(TOKEN):
+                        os.remove(TOKEN)
+                    print("Old token deleted. Re-authenticating.")
+                    return get_credentials()
+                else:
+                    print(f"Error refreshing credentials: {e}")
+                    return None
 
         if not creds:
             try:
