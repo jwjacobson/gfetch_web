@@ -2,16 +2,27 @@ import base64
 import os
 
 from decouple import config
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for, session
+from flask_session import Session
 from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from helpers.clean_emails import clean_email_file
+import redis
 
 app = Flask(__name__)
 app.secret_key = config("SECRET_KEY")
+
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True 
+app.config['SESSION_KEY_PREFIX'] = 'session:'
+
+app.config['SESSION_REDIS'] = redis.Redis(host='localhost', port=6379, db=0)
+
+Session(app)
 
 SCOPES = config("SCOPES")
 RAW_EMAIL_DIR = config("RAW_EMAIL_DIR")
