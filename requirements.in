@@ -9,4 +9,4 @@ ipdb
 pytest
 pytest-cov
 redis
-flask-session
+Flask-Session
