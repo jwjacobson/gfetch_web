@@ -8,3 +8,5 @@ ruff
 ipdb
 pytest
 pytest-cov
+redis
+flask-session
