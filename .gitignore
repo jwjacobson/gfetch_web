@@ -169,3 +169,4 @@ sample_*
 raw_emails/
 cleaned_emails/
 scratch*.py
+node_modules/

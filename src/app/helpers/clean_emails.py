@@ -26,7 +26,6 @@ from decouple import config
 OUTPUT_DIR = config("CLEANED_EMAIL_DIR")
 ATTACHMENTS_DIR = config("ATTACHMENTS_DIR")
 
-
 def clean_email_file(email_file):
     """
     Take an eml file and output a cleaned txt file.
@@ -109,13 +108,13 @@ def clean_email_file(email_file):
         body = msg.get_payload(decode=True).decode(charset, errors="replace")
 
     if not body:
-        body = (
-            "This email has no text in the body. Maybe it contained only an attachment?"
-        )
+        body = "This email has no text in the body. Maybe it contained only an attachment?"
 
     body = body.split("\nOn ")[0]
 
-    email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
+    email_content = (
+        f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
+    )
 
     if attachments:
         email_content += "ATTACHMENTS:\n"
