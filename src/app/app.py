@@ -131,36 +131,38 @@ def delete_files():
     attachments = os.listdir(ATTACHMENTS_DIR)
     clean_emails = [email for email in os.listdir(CLEANED_EMAIL_DIR) if email.endswith(".txt")]
     raw_emails = [email for email in os.listdir(RAW_EMAIL_DIR) if email.endswith(".eml")]
+    deleted_emails = 0
+    deleted_attachments = 0
     
     if not attachments:
         flash("No attachments found.")
     else:
-        attachment_count = len(attachments)
-        flash(f"Found {attachment_count} attachments.")
         for attachment in attachments:
-            flash(f'Deleting {attachment}.')
             attachment_path = os.path.join(ATTACHMENTS_DIR, attachment)
             os.remove(attachment_path)
+            deleted_attachments += 1
     
     if not clean_emails:
         flash("No cleaned emails found.")
     else:
-        clean_count = len(clean_emails)
-        flash(f"Found {clean_count} cleaned emails.")
         for email in clean_emails:
-            flash(f'Deleting {email}.')
             clean_path = os.path.join(CLEANED_EMAIL_DIR, email)
             os.remove(clean_path)
+            deleted_emails += 1
 
     if not raw_emails:
         flash("No raw emails found.")
     else:
-        raw_count = len(raw_emails)
-        flash(f"Found {raw_count} raw emails.")
         for email in raw_emails:
-            flash(f'Deleting {email}.')
             raw_path = os.path.join(RAW_EMAIL_DIR, email)
             os.remove(raw_path)
+
+    if deleted_emails and deleted_attachments:
+        flash(f"Deleted {deleted_emails} emails and {deleted_attachments} attachments.")
+    elif deleted_emails:
+        flash(f"Deleted {deleted_emails} emails.")
+    elif deleted_attachments:
+        flash(f"Deleted {deleted_attachments} attachments.")
 
     return redirect(url_for('index'))
 
