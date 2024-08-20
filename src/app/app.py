@@ -13,7 +13,6 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-# os.environ['FLASK_ENV'] = os.getenvconfig('FLASK_ENV', default='production')
 app.config['DEBUG'] = os.getenv('DEBUG', default=False)
 SCOPES = os.getenv("SCOPES")
 RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
