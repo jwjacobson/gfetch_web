@@ -16,7 +16,6 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-app.config['DEBUG'] = os.getenv('DEBUG', default=False)
 SCOPES = os.getenv("SCOPES")
 RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
 CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
@@ -94,6 +93,7 @@ def index():
 
         query = f"to:{email_address} OR from:{email_address}"
         next_page_token = None
+        total_messages = 0
 
         while True:
             if next_page_token:
@@ -115,10 +115,12 @@ def index():
                     with open(raw_email_path, 'wb') as f:
                         f.write(msg_str)
                     clean_email_file(raw_email_path)
-                flash(f'Saved and cleaned {len(messages)} messages.')
+                total_messages += len(messages)
 
             if not next_page_token:
                 break
+                
+        flash(f'Saved and cleaned {total_messages} messages.')
 
         return redirect(url_for('index'))
 
