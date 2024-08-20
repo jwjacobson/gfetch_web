@@ -58,6 +58,9 @@ def get_credentials():
                 creds.refresh(Request())
             except Exception as e:
                 print(f"Error refreshing credentials: {e}")
+                if os.path.exists(TOKEN):
+                    os.remove(TOKEN)
+                creds = None
 
         if not creds:
             try:
