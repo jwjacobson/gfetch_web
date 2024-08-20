@@ -3,11 +3,14 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_session import Session
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from helpers.clean_emails import clean_email_file
+from redis import Redis
+
 
 load_dotenv()
 
@@ -20,6 +23,16 @@ CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 CREDS = os.getenv("CREDS")
 TOKEN = os.getenv("TOKEN")
+
+# Redis configuation
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True 
+app.config['SESSION_KEY_PREFIX'] = 'session:'
+app.config['SESSION_REDIS'] = Redis(host='localhost', port=6379)
+
+# Start redis
+Session(app)
 
 def create_dirs():
     if not os.path.exists(RAW_EMAIL_DIR):
