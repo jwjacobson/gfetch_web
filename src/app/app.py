@@ -1,7 +1,7 @@
 import base64
 import os
 
-from decouple import config
+from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, url_for
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -9,15 +9,18 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from helpers.clean_emails import clean_email_file
 
-app = Flask(__name__)
-app.secret_key = config("SECRET_KEY")
+load_dotenv()
 
-SCOPES = config("SCOPES")
-RAW_EMAIL_DIR = config("RAW_EMAIL_DIR")
-CLEANED_EMAIL_DIR = config("CLEANED_EMAIL_DIR")
-ATTACHMENTS_DIR = config("ATTACHMENTS_DIR")
-CREDS = config("CREDS")
-TOKEN = config("TOKEN")
+app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+# os.environ['FLASK_ENV'] = os.getenvconfig('FLASK_ENV', default='production')
+app.config['DEBUG'] = os.getenv('DEBUG', default=False)
+SCOPES = os.getenv("SCOPES")
+RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
+CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
+ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
+CREDS = os.getenv("CREDS")
+TOKEN = os.getenv("TOKEN")
 
 def create_dirs():
     if not os.path.exists(RAW_EMAIL_DIR):
@@ -54,7 +57,6 @@ def get_credentials():
                     token.write(creds.to_json())
             except Exception as e:
                 print(f"Error during OAuth flow: {e}")
-                return None
 
     return creds
 
@@ -148,4 +150,4 @@ def delete_files():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5000)

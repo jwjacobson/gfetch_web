@@ -21,10 +21,8 @@ import os
 from email import policy
 from email.parser import BytesParser
 
-from decouple import config
-
-OUTPUT_DIR = config("CLEANED_EMAIL_DIR")
-ATTACHMENTS_DIR = config("ATTACHMENTS_DIR")
+OUTPUT_DIR = os.getenv("CLEANED_EMAIL_DIR")
+ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
 def clean_email_file(email_file):
     """
