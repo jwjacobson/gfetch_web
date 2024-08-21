@@ -118,9 +118,7 @@ def clean_email_file(email_file):
         email_content += "ATTACHMENTS:\n"
         for attachment in attachments:
             email_content += f"- {attachment}\n"
-    else:
-        email_content += "ATTACHMENTS: None\n"
-
+    
     email_content += f"\n{body}"
 
     email_filename = os.path.join(OUTPUT_DIR, f"{formatted_date}__{formatted_subj}.txt")
