@@ -125,6 +125,9 @@ def clean_email_file(email_file):
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
 
+    if attachments:
+        return len(attachments)
+
 
 if __name__ == "__main__":
     OUTPUT_DIR = "."

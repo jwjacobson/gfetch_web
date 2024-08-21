@@ -94,6 +94,7 @@ def index():
         query = f"to:{email_address} OR from:{email_address}"
         next_page_token = None
         total_messages = 0
+        total_attachments = 0
 
         while True:
             if next_page_token:
@@ -105,7 +106,7 @@ def index():
             next_page_token = results.get('nextPageToken', None)
 
             if not messages:
-                flash('No more messages found.')
+                print('No messages remain.')
                 break
             else:
                 for message in messages:
@@ -114,13 +115,17 @@ def index():
                     raw_email_path = os.path.join(RAW_EMAIL_DIR, f'email_{message["id"]}.eml')
                     with open(raw_email_path, 'wb') as f:
                         f.write(msg_str)
-                    clean_email_file(raw_email_path)
+                    attachments = clean_email_file(raw_email_path)
+                    if attachments:
+                        total_attachments += attachments
+                        
                 total_messages += len(messages)
 
             if not next_page_token:
                 break
                 
         flash(f'Saved and cleaned {total_messages} messages.')
+        flash(f'Saved {total_attachments} attachments.')
 
         return redirect(url_for('index'))
 
