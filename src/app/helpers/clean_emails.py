@@ -24,6 +24,7 @@ from email.parser import BytesParser
 OUTPUT_DIR = os.getenv("CLEANED_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
+
 def clean_email_file(email_file):
     """
     Take an eml file and output a cleaned txt file.
@@ -106,19 +107,19 @@ def clean_email_file(email_file):
         body = msg.get_payload(decode=True).decode(charset, errors="replace")
 
     if not body:
-        body = "This email has no text in the body. Maybe it contained only an attachment?"
+        body = (
+            "This email has no text in the body. Maybe it contained only an attachment?"
+        )
 
     body = body.split("\nOn ")[0]
 
-    email_content = (
-        f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
-    )
+    email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
 
     if attachments:
         email_content += "ATTACHMENTS:\n"
         for attachment in attachments:
             email_content += f"- {attachment}\n"
-    
+
     email_content += f"\n{body}"
 
     email_filename = os.path.join(OUTPUT_DIR, f"{formatted_date}__{formatted_subj}.txt")
