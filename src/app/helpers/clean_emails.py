@@ -1,4 +1,4 @@
-# gmailfetcher -- save gmail emails locally
+# gfetch -- save gmail emails locally
 # Copyright (C) 2024 Jeff Jacobson <jeffjacobsonhimself@gmail.com>
 #
 #
