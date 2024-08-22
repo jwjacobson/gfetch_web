@@ -14,8 +14,8 @@ For now, you have to install Gfetch locally to use it. You will need Python 3.12
 3. Create a virtual environment: ```python -m venv venv``` (Windows/Linux) or ```python3 -m venv venv``` (Mac).
 4. Activate the virtual environment: ```.\venv\Scripts\activate``` (Windows) or ```source venv/bin/activate```.
 5. Install the dependencies. You have two options:
-  1. You can use the pregenerated requirements.txt file: ```pip install -r requirements.txt```; or
-  2. You can generate a new requirements.txt and install from it with ```pip install pip-tools; pip-compile; pip install -r requirements.txt```.
+  * You can use the pregenerated requirements.txt file: ```pip install -r requirements.txt```; or
+  * You can generate a new requirements.txt and install from it with ```pip install pip-tools; pip-compile; pip install -r requirements.txt```.
 6. Create a .env file in the root directory to set the necessary environment variables. I've supplied a file, env-template, that shows what you need and has some default values, but Windows users will need to change the filepath syntax.
 7. Now you should be able to run the app with ```flask run```, but you need to do some further setup via Google Cloud to make it functional.
 
