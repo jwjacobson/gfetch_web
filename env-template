@@ -1,0 +1,9 @@
+SECRET_KEY='choose something secret!'
+SCOPES=https://www.googleapis.com/auth/gmail.readonly
+RAW_EMAIL_DIR=./src/app/raw_emails
+CLEANED_EMAIL_DIR=./src/app/cleaned_emails
+ATTACHMENTS_DIR=./src/app/cleaned_emails/attachments
+CREDS=./src/app/credentials.json
+TOKEN=./src/app/token.json
+FLASK_APP=./src/app/app.py
+FLASK_ENV=development
