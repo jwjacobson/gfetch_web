@@ -19,6 +19,7 @@
 import base64
 import os
 
+from auth import get_credentials
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_session import Session
@@ -33,12 +34,9 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-SCOPES = os.getenv("SCOPES")
 RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
 CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
-CREDS = os.getenv("CREDS")
-TOKEN = os.getenv("TOKEN")
 
 # Redis configuation
 app.config["SESSION_TYPE"] = "redis"
@@ -61,36 +59,6 @@ def create_dirs():
 
 
 create_dirs()
-
-
-def get_credentials():
-    creds = None
-    if os.path.exists(TOKEN):
-        try:
-            creds = Credentials.from_authorized_user_file(TOKEN, SCOPES)
-        except Exception as e:
-            print(f"Error loading credentials: {e}")
-
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            try:
-                creds.refresh(Request())
-            except Exception as e:
-                print(f"Error refreshing credentials: {e}")
-                if os.path.exists(TOKEN):
-                    os.remove(TOKEN)
-                creds = None
-
-        if not creds:
-            try:
-                flow = InstalledAppFlow.from_client_secrets_file(CREDS, SCOPES)
-                creds = flow.run_local_server(port=0)
-                with open(TOKEN, "w") as token:
-                    token.write(creds.to_json())
-            except Exception as e:
-                print(f"Error during OAuth flow: {e}")
-
-    return creds
 
 
 @app.route("/", methods=["GET", "POST"])
