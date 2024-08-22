@@ -7,3 +7,8 @@ CREDS=./src/app/credentials.json
 TOKEN=./src/app/token.json
 FLASK_APP=./src/app/app.py
 FLASK_ENV=development
+SESSION_TYPE="redis"
+SESSION_PERMANENT=False
+SESSION_USE_SIGNER=True
+SESSION_KEY_PREFIX="session:"
+SESSION_REDIS=Redis(host="localhost", port=6379)

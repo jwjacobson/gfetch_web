@@ -39,11 +39,11 @@ CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
 # Redis configuation
-app.config["SESSION_TYPE"] = "redis"
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_USE_SIGNER"] = True
-app.config["SESSION_KEY_PREFIX"] = "session:"
-app.config["SESSION_REDIS"] = Redis(host="localhost", port=6379)
+app.config["SESSION_TYPE"] = os.getenv("SESSION_TYPE")
+app.config["SESSION_PERMANENT"] = os.getenv("SESSION_PERMANENT")
+app.config["SESSION_USE_SIGNER"] = os.getenv("SESSION_USE_SIGNER")
+app.config["SESSION_KEY_PREFIX"] = os.getenv("SESSION_KEY_PREFIX")
+app.config["SESSION_REDIS"] = os.getenv("SESSION_REDIS")
 
 # Start redis
 Session(app)
