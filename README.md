@@ -1,23 +1,23 @@
 # Gfetch - back up Gmail correspondence locally
 
-Gfetch is a Gmail correspondence backup app. It saves raw and cleaned versions of your emails with a specified correspondent, including attachments, to your filesystem. It also lets you delete all the downloaded files with the push of a button.
+Gfetch is a Gmail correspondence backup app. It saves raw and cleaned versions of your emails with a specified correspondent, including attachments to your filesystem. It also lets you delete all the downloaded files with the push of a button.
 
 It started life as a [CLI app](https://github.com/jwjacobson/gmailfetcher) but I've since converted it into a web app using Flask.
 
 ### Tech stack
-Gfetch is built using [Flask](https://flask.palletsprojects.com/en/3.0.x/) 3 and [Python](https://www.python.org/) 3.12. It uses [Redis](https://redis.io/) for server-side caching and [Tailwind CSS](https://tailwindcss.com/) for styling. It downloads emails using the (Gmail API)[https://developers.google.com/gmail/api/guides].  
+Gfetch is built using [Flask](https://flask.palletsprojects.com/en/3.0.x/) 3 and [Python](https://www.python.org/) 3.12. It uses [Redis](https://redis.io/) for server-side caching and [Tailwind CSS](https://tailwindcss.com/) for styling. It downloads emails using the [Gmail API](https://developers.google.com/gmail/api/guides).  
 
 ### Installation
-Currently, you have to install Gfetch locally to use it. You will need Python 3.12 or later.
+For now, you have to install Gfetch locally to use it. You will need Python 3.12 or later.
 1. Clone this repository.
 2. Navigate to the 'gfetch_web' directory.
-3. Create a virtual environment ```python -m venv venv''' (Windows/Linux) or ```python3 -m venv venv``` (Mac).
+3. Create a virtual environment ```python -m venv venv``` (Windows/Linux) or ```python3 -m venv venv``` (Mac).
 4. Activate the virtual environment ```.\venv\Scripts\activate``` (Windows) or ```source venv/bin/activate```
 5. Install the dependencies. 
   You can use the pregenerated requirements.txt file: ```pip install -r requirements.txt```
   Or you can create a new one to install from with ```pip install pip-tools; pip-compile; pip install -r requirements.txt```
-6. Create a .env file in the root directory with environment variables (I've supplied a file, env-template, that shows what you need and has some default values (Windows users will need to change the filepath syntax))
-7. Now you should be able to run the app with ```flask run```, but you need to do some further set up via Google Cloud to make it functional.
+6. Create a .env file in the root directory to set the necessary environment variables. I've supplied a file, env-template, that shows what you need and has some default values, but Windows users will need to change the filepath syntax.
+7. Now you should be able to run the app with ```flask run```, but you need to do some further setup via Google Cloud to make it functional.
 
 ### Setting up Google Cloud
 1. Go the the [Google Cloud Console](https://console.cloud.google.com/welcome/) and create an account if you don't have one (you will need to input payment info but won't be charged if you have a free trial)
