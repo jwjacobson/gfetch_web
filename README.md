@@ -1,6 +1,6 @@
 # Gfetch - back up Gmail correspondence locally
 
-Gfetch is a Gmail correspondence backup app. It saves raw and cleaned versions of your emails with a specified correspondent, including attachments to your filesystem. It also lets you delete all the downloaded files with the push of a button.
+Gfetch is a Gmail correspondence backup app. It saves raw and cleaned versions of your emails with a specified correspondent to your filesystem. Attachments are saved to their own subfolder. It also lets you delete all the downloaded files with the push of a button.
 
 It started life as a [CLI app](https://github.com/jwjacobson/gmailfetcher) but I've since converted it into a web app using Flask.
 
