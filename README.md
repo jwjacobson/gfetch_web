@@ -8,7 +8,7 @@ It started life as a [CLI app](https://github.com/jwjacobson/gmailfetcher) but I
 Gfetch is built using [Flask](https://flask.palletsprojects.com/en/3.0.x/) 3 and [Python](https://www.python.org/) 3.12. It uses [Redis](https://redis.io/) for server-side caching and [Tailwind CSS](https://tailwindcss.com/) for styling. It downloads emails using the [Gmail API](https://developers.google.com/gmail/api/guides).  
 
 ### Installation
-For now, you have to install Gfetch locally to use it. You will need Python 3.12 or later.
+For now, you have to install Gfetch locally to use it. You will need Python 3.12 or later ([pyenv](https://github.com/pyenv/pyenv) can help with this), and you must have redis installed and running.
 1. Clone this repository.
 2. Navigate to the 'gfetch_web' directory.
 3. Create a virtual environment ```python -m venv venv``` (Windows/Linux) or ```python3 -m venv venv``` (Mac).
@@ -35,4 +35,4 @@ For now, you have to install Gfetch locally to use it. You will need Python 3.12
 5. You can close the app by closing your browser and pressing Ctrl-C in the terminal running Flask.
 
 ### License
-Gfetch is [free software](https://www.fsf.org/about/what-is-free-software), released under version 3.0 of the GPL. Everyone has the right to use, modify, and distribute jazztunes subject to the [stipulations](https://github.com/jwjacobson/jazztunes/blob/main/LICENSE) of that license.
+Gfetch is [free software](https://www.fsf.org/about/what-is-free-software), released under version 3.0 of the GPL. Everyone has the right to use, modify, and distribute jazztunes subject to the [stipulations](https://github.com/jwjacobson/gfetch_web/blob/main/LICENSE) of that license.
