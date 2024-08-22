@@ -20,12 +20,15 @@ For now, you have to install Gfetch locally to use it. You will need Python 3.12
 7. Now you should be able to run the app with ```flask run```, but you need to do some further setup via Google Cloud to make it functional.
 
 ### Setting up Google Cloud
+Since the app is not yet verified or published by Google, you will need to set it up as your own project in Google Cloud:
 1. Go the the [Google Cloud Console](https://console.cloud.google.com/welcome/) and create an account if you don't have one (you will need to input payment info but won't be charged if you have a free trial).
-2. Using the navigation menu in the top-left of the screen, go to ```APIs & Services```, then ```Enable APIs and Services```.
-3. Search ```gmail``` in the box and find the Gmail API, then enable it.
-4. In the ```APIs & Services``` menu, click ```Credentials```, then click ```Create Credentials```, then ```OAuth Client ID```.
-5. Follow the prompts to generate credentials.
-6. Once you've created the credentials, you should see them on the main credentials page. Download the credentials JSON. If you're using the values from env-template, you should save it in ```gfetch_web/src/app/``` with the filename ```credentials.json```. If you save it anywhere else, make sure the CREDS variable in .env points to that file.
+2. In the dropdown menu to the right of the Google Cloud logo in the top-left of the screen, select ```New Project```. You can name it whatever you like.
+3. Once your project is created it, select it.
+4. Using the navigation menu in the top-left of the screen, go to ```APIs & Services```, then ```Enable APIs and Services```.
+5. Search ```gmail``` in the box and find the Gmail API, then enable it.
+6. In the ```APIs & Services``` menu, click ```Credentials```, then click ```Create Credentials```, then ```OAuth Client ID```.
+7. Follow the prompts to generate credentials.
+8. Once you've created the credentials, you should see them on the main credentials page. Download the credentials JSON. If you're using the values from env-template, you should save it in ```gfetch_web/src/app/``` with the filename ```credentials.json```. If you save it anywhere else, make sure the CREDS variable in .env points to that file.
 
 ### Running the app
 1. Start Flask: ```flask run```.
