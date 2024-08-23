@@ -34,7 +34,7 @@ RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
 CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
-# Redis configuation
+# Redis configuration
 app.config["SESSION_TYPE"] = os.getenv("SESSION_TYPE")
 app.config["SESSION_PERMANENT"] = os.getenv("SESSION_PERMANENT")
 app.config["SESSION_USE_SIGNER"] = os.getenv("SESSION_USE_SIGNER")
