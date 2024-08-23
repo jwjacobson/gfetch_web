@@ -3,6 +3,7 @@ import os
 import pytest
 
 from app import app
+from unittest.mock import patch
 
 @pytest.fixture
 def test_client():
@@ -19,3 +20,14 @@ def mock_os_listdir(path):
     elif path == "test_raw_email_dir":
         return ["email1.eml", "email2.eml", "email3.eml"]
     return []
+
+def mock_os_remove(path):
+    print(f"Mock remove called for: {path}")
+
+def test_delete_files(test_client, monkeypatch):
+    monkeypatch.setattr(os, "listdir", mock_os_listdir)
+    monkeypatch.setattr(os, "remove", mock_os_remove)
+    
+    response = test_client.post("/delete/")
+    
+    assert response.status_code == 302
