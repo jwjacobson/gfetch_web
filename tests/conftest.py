@@ -1,6 +1,6 @@
 import pytest
-
 from app import app
+
 
 @pytest.fixture(scope="session")
 def test_client():
@@ -8,6 +8,7 @@ def test_client():
     app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
+
 
 @pytest.fixture(scope="session")
 def temp_dirs(tmp_path_factory):
@@ -18,12 +19,12 @@ def temp_dirs(tmp_path_factory):
     cleaned_email_dir = tmp_path_factory.mktemp("cleaned_emails")
     raw_email_dir = tmp_path_factory.mktemp("raw_emails")
 
-
     return {
         "attachments_dir": attachments_dir,
         "cleaned_email_dir": cleaned_email_dir,
-        "raw_email_dir": raw_email_dir
+        "raw_email_dir": raw_email_dir,
     }
+
 
 @pytest.fixture
 def temp_files_all(temp_dirs):
@@ -41,6 +42,7 @@ def temp_files_all(temp_dirs):
 
     return temp_dirs
 
+
 @pytest.fixture
 def temp_files_no_attachments(temp_dirs):
     """
@@ -53,6 +55,7 @@ def temp_files_no_attachments(temp_dirs):
     (temp_dirs["raw_email_dir"] / "email2.eml").touch()
 
     return temp_dirs
+
 
 @pytest.fixture
 def temp_files_no_clean(temp_dirs):
@@ -67,6 +70,7 @@ def temp_files_no_clean(temp_dirs):
 
     return temp_dirs
 
+
 @pytest.fixture
 def temp_files_no_raw(temp_dirs):
     """
@@ -80,6 +84,7 @@ def temp_files_no_raw(temp_dirs):
 
     return temp_dirs
 
+
 @pytest.fixture
 def temp_files_only_attachments(temp_dirs):
     """
@@ -90,6 +95,7 @@ def temp_files_only_attachments(temp_dirs):
 
     return temp_dirs
 
+
 @pytest.fixture
 def temp_files_only_cleaned(temp_dirs):
     """
@@ -99,6 +105,7 @@ def temp_files_only_cleaned(temp_dirs):
     (temp_dirs["cleaned_email_dir"] / "email2.txt").touch()
 
     return temp_dirs
+
 
 @pytest.fixture
 def temp_files_only_raw(temp_dirs):
