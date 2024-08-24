@@ -26,7 +26,7 @@ def temp_dirs(tmp_path_factory):
     }
 
 @pytest.fixture
-def temp_files(temp_dirs):
+def temp_files_all(temp_dirs):
     """
     Create fake email and attachment files in the temp directories.
     """
@@ -41,3 +41,41 @@ def temp_files(temp_dirs):
 
     return temp_dirs
 
+@pytest.fixture
+def temp_files_no_attachments(temp_dirs):
+    """
+    Create fake email and attachment files in the temp directories.
+    """
+    (temp_dirs["cleaned_email_dir"] / "email1.txt").touch()
+    (temp_dirs["cleaned_email_dir"] / "email2.txt").touch()
+
+    (temp_dirs["raw_email_dir"] / "email1.eml").touch()
+    (temp_dirs["raw_email_dir"] / "email2.eml").touch()
+
+    return temp_dirs
+
+@pytest.fixture
+def temp_files_no_clean(temp_dirs):
+    """
+    Create fake email and attachment files in the temp directories.
+    """
+    (temp_dirs["attachments_dir"] / "file1.pdf").touch()
+    (temp_dirs["attachments_dir"] / "file2.docx").touch()
+
+    (temp_dirs["raw_email_dir"] / "email1.eml").touch()
+    (temp_dirs["raw_email_dir"] / "email2.eml").touch()
+
+    return temp_dirs
+
+@pytest.fixture
+def temp_files_no_raw(temp_dirs):
+    """
+    Create fake email and attachment files in the temp directories.
+    """
+    (temp_dirs["attachments_dir"] / "file1.pdf").touch()
+    (temp_dirs["attachments_dir"] / "file2.docx").touch()
+
+    (temp_dirs["cleaned_email_dir"] / "email1.txt").touch()
+    (temp_dirs["cleaned_email_dir"] / "email2.txt").touch()
+
+    return temp_dirs
