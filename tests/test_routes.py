@@ -52,15 +52,37 @@ def test_delete_files_no_attachments(test_client, monkeypatch, temp_dirs, temp_f
     monkeypatch.setattr("app.ATTACHMENTS_DIR", attachments_dir)
     monkeypatch.setattr("app.CLEANED_EMAIL_DIR", cleaned_email_dir)
     monkeypatch.setattr("app.RAW_EMAIL_DIR", raw_email_dir)
-    
+
     response = test_client.post("/delete/")
 
     assert response.status_code == 302
 
-    assert not os.listdir(temp_files["cleaned_email_dir"])
-    assert not os.listdir(temp_files["raw_email_dir"])
+    assert not os.listdir(cleaned_email_dir)
+    assert not os.listdir(raw_email_dir)
 
     with test_client.session_transaction() as session:
         messages = [message[1] for message in session["_flashes"] if message[0] == 'message']
         assert "No attachments found." in messages
         assert "Deleted 2 emails." in messages
+
+def test_delete_files_no_clean(test_client, monkeypatch, temp_dirs, temp_files_no_clean):
+    temp_files = temp_files_no_clean
+    attachments_dir = temp_files["attachments_dir"]
+    cleaned_email_dir = temp_files["cleaned_email_dir"]
+    raw_email_dir = temp_files["raw_email_dir"]
+
+    monkeypatch.setattr("app.ATTACHMENTS_DIR", attachments_dir)
+    monkeypatch.setattr("app.CLEANED_EMAIL_DIR", cleaned_email_dir)
+    monkeypatch.setattr("app.RAW_EMAIL_DIR", raw_email_dir)
+
+    response = test_client.post("/delete/")
+
+    assert response.status_code == 302
+
+    assert not os.listdir(attachments_dir)
+    assert not os.listdir(raw_email_dir)
+
+    with test_client.session_transaction() as session:
+        messages = [message[1] for message in session["_flashes"] if message[0] == 'message']
+        assert "No cleaned emails found." in messages
+        assert "Deleted 2 emails and 2 attachments." in messages
