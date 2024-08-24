@@ -130,3 +130,25 @@ def test_delete_files_only_attachments(test_client, monkeypatch, temp_dirs, temp
         assert "No raw emails found." in messages
         assert "No cleaned emails found." in messages
         assert "Deleted 2 attachments." in messages
+
+def test_delete_files_only_cleaned(test_client, monkeypatch, temp_dirs, temp_files_only_cleaned):
+    temp_files = temp_files_only_cleaned
+    attachments_dir = temp_files["attachments_dir"]
+    cleaned_email_dir = temp_files["cleaned_email_dir"]
+    raw_email_dir = temp_files["raw_email_dir"]
+
+    monkeypatch.setattr("app.ATTACHMENTS_DIR", attachments_dir)
+    monkeypatch.setattr("app.CLEANED_EMAIL_DIR", cleaned_email_dir)
+    monkeypatch.setattr("app.RAW_EMAIL_DIR", raw_email_dir)
+
+    response = test_client.post("/delete/")
+
+    assert response.status_code == 302
+
+    assert not os.listdir(cleaned_email_dir)
+
+    with test_client.session_transaction() as session:
+        messages = [message[1] for message in session["_flashes"] if message[0] == 'message']
+        assert "No raw emails found." in messages
+        assert "No attachments found." in messages
+        assert "Deleted 2 emails." in messages
