@@ -5,12 +5,6 @@ import pytest
 from app import app
 from unittest.mock import patch
 
-@pytest.fixture
-def test_client():
-    # Flask provides a test client you can use to simulate requests
-    app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client
 
 def mock_os_listdir(path):
     if path == "test_attachments_dir":
