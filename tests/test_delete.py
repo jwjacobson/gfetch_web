@@ -18,7 +18,7 @@ def test_delete_files_empty_dirs(test_client, monkeypatch, temp_dirs):
         assert "No raw emails found." in messages
 
 
-def test_delete_files_all_dirs(test_client, monkeypatch, temp_dirs, temp_files_all):
+def test_delete_files_all_dirs(test_client, monkeypatch, temp_files_all):
     temp_files = temp_files_all
     attachments_dir = temp_files["attachments_dir"]
     cleaned_email_dir = temp_files["cleaned_email_dir"]
@@ -44,7 +44,7 @@ def test_delete_files_all_dirs(test_client, monkeypatch, temp_dirs, temp_files_a
 
 
 def test_delete_files_no_attachments(
-    test_client, monkeypatch, temp_dirs, temp_files_no_attachments
+    test_client, monkeypatch, temp_files_no_attachments
 ):
     temp_files = temp_files_no_attachments
     attachments_dir = temp_files["attachments_dir"]
@@ -71,7 +71,7 @@ def test_delete_files_no_attachments(
 
 
 def test_delete_files_no_clean(
-    test_client, monkeypatch, temp_dirs, temp_files_no_clean
+    test_client, monkeypatch, temp_files_no_clean
 ):
     temp_files = temp_files_no_clean
     attachments_dir = temp_files["attachments_dir"]
@@ -97,7 +97,7 @@ def test_delete_files_no_clean(
         assert "Deleted 2 emails and 2 attachments." in messages
 
 
-def test_delete_files_no_raw(test_client, monkeypatch, temp_dirs, temp_files_no_raw):
+def test_delete_files_no_raw(test_client, monkeypatch, temp_files_no_raw):
     temp_files = temp_files_no_raw
     attachments_dir = temp_files["attachments_dir"]
     cleaned_email_dir = temp_files["cleaned_email_dir"]
@@ -123,7 +123,7 @@ def test_delete_files_no_raw(test_client, monkeypatch, temp_dirs, temp_files_no_
 
 
 def test_delete_files_only_attachments(
-    test_client, monkeypatch, temp_dirs, temp_files_only_attachments
+    test_client, monkeypatch, temp_files_only_attachments
 ):
     temp_files = temp_files_only_attachments
     attachments_dir = temp_files["attachments_dir"]
@@ -150,7 +150,7 @@ def test_delete_files_only_attachments(
 
 
 def test_delete_files_only_cleaned(
-    test_client, monkeypatch, temp_dirs, temp_files_only_cleaned
+    test_client, monkeypatch, temp_files_only_cleaned
 ):
     temp_files = temp_files_only_cleaned
     attachments_dir = temp_files["attachments_dir"]
@@ -177,7 +177,7 @@ def test_delete_files_only_cleaned(
 
 
 def test_delete_files_only_raw(
-    test_client, monkeypatch, temp_dirs, temp_files_only_raw
+    test_client, monkeypatch, temp_files_only_raw
 ):
     temp_files = temp_files_only_raw
     attachments_dir = temp_files["attachments_dir"]
