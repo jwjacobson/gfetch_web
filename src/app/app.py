@@ -27,9 +27,13 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
-CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
-ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
+
+class DirConfig:
+    RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
+    CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
+    ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
+
+dir_config = DirConfig()
 
 # Redis configuration
 app.config["SESSION_TYPE"] = os.getenv("SESSION_TYPE")
