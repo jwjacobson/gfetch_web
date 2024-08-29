@@ -28,7 +28,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
-CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
+CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
 # Redis configuration
@@ -64,7 +64,7 @@ def index():
 def delete_files():
     attachments = os.listdir(ATTACHMENTS_DIR)
     clean_emails = [
-        email for email in os.listdir(CLEANED_EMAIL_DIR) if email.endswith(".txt")
+        email for email in os.listdir(CLEAN_EMAIL_DIR) if email.endswith(".txt")
     ]
     raw_emails = [
         email for email in os.listdir(RAW_EMAIL_DIR) if email.endswith(".eml")
@@ -84,7 +84,7 @@ def delete_files():
         flash("No cleaned emails found.")
     else:
         for email in clean_emails:
-            clean_path = os.path.join(CLEANED_EMAIL_DIR, email)
+            clean_path = os.path.join(CLEAN_EMAIL_DIR, email)
             os.remove(clean_path)
             deleted_emails += 1
 

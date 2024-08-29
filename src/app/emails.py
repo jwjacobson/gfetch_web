@@ -25,15 +25,15 @@ from auth import get_credentials
 from googleapiclient.discovery import build
 
 RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
-CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
+CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
 
 def create_dirs():
     if not os.path.exists(RAW_EMAIL_DIR):
         os.makedirs(RAW_EMAIL_DIR)
-    if not os.path.exists(CLEANED_EMAIL_DIR):
-        os.makedirs(CLEANED_EMAIL_DIR)
+    if not os.path.exists(CLEAN_EMAIL_DIR):
+        os.makedirs(CLEAN_EMAIL_DIR)
     if not os.path.exists(ATTACHMENTS_DIR):
         os.makedirs(ATTACHMENTS_DIR)
 
@@ -136,7 +136,7 @@ def clean_email(email_file):
     email_content += f"\n{body}"
 
     email_filename = os.path.join(
-        CLEANED_EMAIL_DIR, f"{formatted_date}__{formatted_subj}.txt"
+        CLEAN_EMAIL_DIR, f"{formatted_date}__{formatted_subj}.txt"
     )
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
@@ -206,5 +206,5 @@ def fetch_emails(email_address):
 
 
 if __name__ == "__main__":
-    CLEANED_EMAIL_DIR = "."
+    CLEAN_EMAIL_DIR = "."
     clean_email("sample_raw.eml")
