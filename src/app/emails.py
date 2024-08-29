@@ -15,17 +15,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
+import base64
 import email
 import os
+from auth import get_credentials
 from email import policy
 from email.parser import BytesParser
+from googleapiclient.discovery import build
 
-OUTPUT_DIR = os.getenv("CLEANED_EMAIL_DIR")
+
+RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
+CLEANED_EMAIL_DIR = os.getenv("CLEANED_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
+def create_dirs():
+    if not os.path.exists(RAW_EMAIL_DIR):
+        os.makedirs(RAW_EMAIL_DIR)
+    if not os.path.exists(CLEANED_EMAIL_DIR):
+        os.makedirs(CLEANED_EMAIL_DIR)
+    if not os.path.exists(ATTACHMENTS_DIR):
+        os.makedirs(ATTACHMENTS_DIR)
 
-def clean_email_file(email_file):
+
+
+
+def clean_email(email_file):
     """
     Take an eml file and output a cleaned txt file.
     """
@@ -122,7 +136,7 @@ def clean_email_file(email_file):
 
     email_content += f"\n{body}"
 
-    email_filename = os.path.join(OUTPUT_DIR, f"{formatted_date}__{formatted_subj}.txt")
+    email_filename = os.path.join(CLEANED_EMAIL_DIR, f"{formatted_date}__{formatted_subj}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
 
@@ -130,6 +144,67 @@ def clean_email_file(email_file):
         return len(attachments)
 
 
+def fetch_emails(email_address):
+    creds = get_credentials()
+    if not creds:
+        print("Failed to obtain credentials.")
+        # return redirect(url_for("index"))
+
+    try:
+        service = build("gmail", "v1", credentials=creds)
+    except Exception as e:
+        print(f"Error building Gmail service: {e}")
+        # return redirect(url_for("index"))
+
+    query = f"to:{email_address} OR from:{email_address}"
+    next_page_token = None
+    total_messages = 0
+    total_attachments = 0
+
+    while True:
+        if next_page_token:
+            results = (
+                service.users()
+                .messages()
+                .list(userId="me", q=query, pageToken=next_page_token)
+                .execute()
+            )
+        else:
+            results = (
+                service.users().messages().list(userId="me", q=query).execute()
+            )
+
+        messages = results.get("messages", [])
+        next_page_token = results.get("nextPageToken", None)
+
+        if not messages:
+            print("No messages remain.")
+            break
+        else:
+            for message in messages:
+                msg = (
+                    service.users()
+                    .messages()
+                    .get(userId="me", id=message["id"], format="raw")
+                    .execute()
+                )
+                msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
+                raw_email_path = os.path.join(
+                    RAW_EMAIL_DIR, f'email_{message["id"]}.eml'
+                )
+                with open(raw_email_path, "wb") as f:
+                    f.write(msg_str)
+                attachments = clean_email(raw_email_path)
+                if attachments:
+                    total_attachments += attachments
+
+            total_messages += len(messages)
+
+        if not next_page_token:
+            break
+
+    return {"total_messages": total_messages, "total_attachments": total_attachments}
+
 if __name__ == "__main__":
-    OUTPUT_DIR = "."
+    CLEANED_EMAIL_DIR = "."
     clean_email_file("sample_raw.eml")
