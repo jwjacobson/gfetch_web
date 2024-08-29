@@ -19,7 +19,7 @@
 import os
 
 from dotenv import load_dotenv
-from emails import create_dirs, fetch_emails
+from emails import fetch_emails
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_session import Session
 
@@ -35,6 +35,15 @@ class DirConfig:
 
 dir_config = DirConfig()
 
+def create_dirs(config):
+    if not os.path.exists(config.RAW_EMAIL_DIR):
+        os.makedirs(config.RAW_EMAIL_DIR)
+    if not os.path.exists(config.CLEAN_EMAIL_DIR):
+        os.makedirs(config.CLEAN_EMAIL_DIR)
+    if not os.path.exists(config.ATTACHMENTS_DIR):
+        os.makedirs(config.ATTACHMENTS_DIR)
+
+
 # Redis configuration
 app.config["SESSION_TYPE"] = os.getenv("SESSION_TYPE")
 app.config["SESSION_PERMANENT"] = os.getenv("SESSION_PERMANENT")
@@ -46,7 +55,7 @@ app.config["SESSION_REDIS"] = os.getenv("SESSION_REDIS")
 Session(app)
 
 
-create_dirs()
+create_dirs(config)
 
 
 @app.route("/", methods=["GET", "POST"])

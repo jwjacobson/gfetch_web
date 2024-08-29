@@ -29,14 +29,6 @@ CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
 ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
 
-def create_dirs():
-    if not os.path.exists(RAW_EMAIL_DIR):
-        os.makedirs(RAW_EMAIL_DIR)
-    if not os.path.exists(CLEAN_EMAIL_DIR):
-        os.makedirs(CLEAN_EMAIL_DIR)
-    if not os.path.exists(ATTACHMENTS_DIR):
-        os.makedirs(ATTACHMENTS_DIR)
-
 
 def clean_email(email_file):
     """
