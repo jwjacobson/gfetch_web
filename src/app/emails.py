@@ -24,16 +24,17 @@ from email.parser import BytesParser
 from auth import get_credentials
 from googleapiclient.discovery import build
 
-RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
-CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
-ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
 
 
-def clean_email(email_file):
+def clean_email(email_file, config):
     """
     Take an eml file and output a cleaned txt file.
     """
+    raw_dir = config.RAW_EMAIL_DIR
+    clean_dir = config.CLEAN_EMAIL_DIR
+    attachments_dir = config.ATTACHMENTS_DIR
+
     with open(email_file, "rb") as f:
         msg = BytesParser(policy=policy.default).parse(f)
 
@@ -49,7 +50,7 @@ def clean_email(email_file):
                 filename = part.get_filename()
                 if filename:
                     attachments.append(filename)
-                    filepath = os.path.join(ATTACHMENTS_DIR, filename)
+                    filepath = os.path.join(attachments_dir, filename)
                     with open(filepath, "wb") as attachment_file:
                         attachment_file.write(part.get_payload(decode=True))
                 break
@@ -128,7 +129,7 @@ def clean_email(email_file):
     email_content += f"\n{body}"
 
     email_filename = os.path.join(
-        CLEAN_EMAIL_DIR, f"{formatted_date}__{formatted_subj}.txt"
+        clean_dir, f"{formatted_date}__{formatted_subj}.txt"
     )
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
@@ -137,8 +138,12 @@ def clean_email(email_file):
         return len(attachments)
 
 
-def fetch_emails(email_address):
+def fetch_emails(email_address, config):
+    raw_dir = config.RAW_EMAIL_DIR
+    clean_dir = config.CLEAN_EMAIL_DIR
+    attachments_dir = config.ATTACHMENTS_DIR
     creds = get_credentials()
+    
     if not creds:
         return {"error": "Failed to obtain credentials."}
 
@@ -180,11 +185,11 @@ def fetch_emails(email_address):
                 )
                 msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
                 raw_email_path = os.path.join(
-                    RAW_EMAIL_DIR, f'email_{message["id"]}.eml'
+                    raw_dir, f'email_{message["id"]}.eml'
                 )
                 with open(raw_email_path, "wb") as f:
                     f.write(msg_str)
-                attachments = clean_email(raw_email_path)
+                attachments = clean_email(raw_email_path, config)
                 if attachments:
                     total_attachments += attachments
 
@@ -196,6 +201,3 @@ def fetch_emails(email_address):
     return {"total_messages": total_messages, "total_attachments": total_attachments}
 
 
-if __name__ == "__main__":
-    CLEAN_EMAIL_DIR = "."
-    clean_email("sample_raw.eml")

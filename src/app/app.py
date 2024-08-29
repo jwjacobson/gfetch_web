@@ -55,7 +55,7 @@ app.config["SESSION_REDIS"] = os.getenv("SESSION_REDIS")
 Session(app)
 
 
-create_dirs(config)
+create_dirs(dir_config)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -63,7 +63,7 @@ def index():
     if request.method == "POST":
         email_address = request.form["email_address"]
 
-        result = fetch_emails(email_address)
+        result = fetch_emails(email_address, dir_config)
 
         if "error" in result:
             flash(result["error"])
