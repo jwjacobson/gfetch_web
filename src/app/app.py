@@ -16,15 +16,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-import base64
 import os
 
-from auth import get_credentials
-from emails import fetch_emails, create_dirs
 from dotenv import load_dotenv
+from emails import create_dirs, fetch_emails
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_session import Session
-from googleapiclient.discovery import build
 
 load_dotenv()
 
@@ -46,6 +43,7 @@ Session(app)
 
 
 create_dirs()
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
