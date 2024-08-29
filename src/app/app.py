@@ -79,12 +79,16 @@ def index():
 
 @app.route("/delete/", methods=["POST"])
 def delete_files():
-    attachments = os.listdir(ATTACHMENTS_DIR)
+    attachments_dir = dir_config.ATTACHMENTS_DIR
+    clean_dir = dir_config.CLEAN_EMAIL_DIR
+    raw_dir = dir_config.RAW_EMAIL_DIR
+
+    attachments = os.listdir(attachments_dir)
     clean_emails = [
-        email for email in os.listdir(CLEAN_EMAIL_DIR) if email.endswith(".txt")
+        email for email in os.listdir(clean_dir) if email.endswith(".txt")
     ]
     raw_emails = [
-        email for email in os.listdir(RAW_EMAIL_DIR) if email.endswith(".eml")
+        email for email in os.listdir(raw_dir) if email.endswith(".eml")
     ]
     deleted_emails = 0
     deleted_attachments = 0
@@ -93,7 +97,7 @@ def delete_files():
         flash("No attachments found.")
     else:
         for attachment in attachments:
-            attachment_path = os.path.join(ATTACHMENTS_DIR, attachment)
+            attachment_path = os.path.join(attachments_dir, attachment)
             os.remove(attachment_path)
             deleted_attachments += 1
 
@@ -101,7 +105,7 @@ def delete_files():
         flash("No cleaned emails found.")
     else:
         for email in clean_emails:
-            clean_path = os.path.join(CLEAN_EMAIL_DIR, email)
+            clean_path = os.path.join(clean_dir, email)
             os.remove(clean_path)
             deleted_emails += 1
 
@@ -109,7 +113,7 @@ def delete_files():
         flash("No raw emails found.")
     else:
         for email in raw_emails:
-            raw_path = os.path.join(RAW_EMAIL_DIR, email)
+            raw_path = os.path.join(raw_dir, email)
             os.remove(raw_path)
 
     if deleted_emails and deleted_attachments:
