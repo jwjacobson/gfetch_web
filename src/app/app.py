@@ -50,10 +50,14 @@ def index():
     if request.method == "POST":
         email_address = request.form["email_address"]
 
-        final_count = fetch_emails(email_address)
+        result = fetch_emails(email_address)
 
-        flash(f"Saved and cleaned {final_count['total_messages']} messages.")
-        flash(f"Saved {final_count['total_attachments']} attachments.")
+        if "error" in result:
+            flash(result["error"])
+            return redirect(url_for("index"))
+
+        flash(f"Saved and cleaned {result['total_messages']} messages.")
+        flash(f"Saved {result['total_attachments']} attachments.")
 
         return redirect(url_for("index"))
 

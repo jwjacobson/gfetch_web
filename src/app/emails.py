@@ -148,14 +148,13 @@ def clean_email(email_file):
 def fetch_emails(email_address):
     creds = get_credentials()
     if not creds:
-        print("Failed to obtain credentials.")
-        # return redirect(url_for("index"))
+        return {"error": "Failed to obtain credentials."}
 
     try:
         service = build("gmail", "v1", credentials=creds)
     except Exception as e:
         print(f"Error building Gmail service: {e}")
-        # return redirect(url_for("index"))
+        return {"error": f"Error building Gmail service: {e}"}
 
     query = f"to:{email_address} OR from:{email_address}"
     next_page_token = None
