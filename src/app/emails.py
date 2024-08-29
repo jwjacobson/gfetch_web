@@ -31,7 +31,6 @@ def clean_email(email_file, config):
     """
     Take an eml file and output a cleaned txt file.
     """
-    raw_dir = config.RAW_EMAIL_DIR
     clean_dir = config.CLEAN_EMAIL_DIR
     attachments_dir = config.ATTACHMENTS_DIR
 
@@ -140,8 +139,6 @@ def clean_email(email_file, config):
 
 def fetch_emails(email_address, config):
     raw_dir = config.RAW_EMAIL_DIR
-    clean_dir = config.CLEAN_EMAIL_DIR
-    attachments_dir = config.ATTACHMENTS_DIR
     creds = get_credentials()
     
     if not creds:
