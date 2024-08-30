@@ -2,6 +2,7 @@ import os
 
 from app import app
 
+
 def test_delete_files_empty_dirs(test_client, monkeypatch, temp_dirs):
     monkeypatch.setattr(app.dir_config, "ATTACHMENTS_DIR", temp_dirs["attachments_dir"])
     monkeypatch.setattr(app.dir_config, "CLEAN_EMAIL_DIR", temp_dirs["clean_email_dir"])
@@ -71,9 +72,7 @@ def test_delete_files_no_attachments(
         assert "Deleted 2 emails." in messages
 
 
-def test_delete_files_no_clean(
-    test_client, monkeypatch, temp_files_no_clean
-):
+def test_delete_files_no_clean(test_client, monkeypatch, temp_files_no_clean):
     temp_files = temp_files_no_clean
     attachments_dir = temp_files["attachments_dir"]
     clean_email_dir = temp_files["clean_email_dir"]
@@ -150,9 +149,7 @@ def test_delete_files_only_attachments(
         assert "Deleted 2 attachments." in messages
 
 
-def test_delete_files_only_clean(
-    test_client, monkeypatch, temp_files_only_clean
-):
+def test_delete_files_only_clean(test_client, monkeypatch, temp_files_only_clean):
     temp_files = temp_files_only_clean
     attachments_dir = temp_files["attachments_dir"]
     clean_email_dir = temp_files["clean_email_dir"]
@@ -177,9 +174,7 @@ def test_delete_files_only_clean(
         assert "Deleted 2 emails." in messages
 
 
-def test_delete_files_only_raw(
-    test_client, monkeypatch, temp_files_only_raw
-):
+def test_delete_files_only_raw(test_client, monkeypatch, temp_files_only_raw):
     temp_files = temp_files_only_raw
     attachments_dir = temp_files["attachments_dir"]
     clean_email_dir = temp_files["clean_email_dir"]

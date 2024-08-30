@@ -8,6 +8,7 @@ def test_create_dirs_already_exist(monkeypatch, temp_dirs):
     create_dirs(app.dir_config)
     assert True
 
+
 def test_create_dirs_not_exist(monkeypatch, tmp_path):
     attachments_dir = tmp_path / "attachments"
     clean_email_dir = tmp_path / "cleaned_emails"
@@ -20,7 +21,7 @@ def test_create_dirs_not_exist(monkeypatch, tmp_path):
     monkeypatch.setattr(app.dir_config, "ATTACHMENTS_DIR", attachments_dir)
     monkeypatch.setattr(app.dir_config, "CLEAN_EMAIL_DIR", clean_email_dir)
     monkeypatch.setattr(app.dir_config, "RAW_EMAIL_DIR", raw_email_dir)
-    
+
     create_dirs(app.dir_config)
 
     assert attachments_dir.exists()

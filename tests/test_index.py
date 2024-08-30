@@ -4,21 +4,25 @@ from app import app
 from unittest.mock import Mock, patch, create_autospec
 from google.auth.credentials import Credentials
 
+
 @pytest.fixture()
 def mock_token(tmp_path):
     """Create a temporary mock token."""
     token = tmp_path / "token.json"
-    return token 
+    return token
+
 
 def test_get(test_client):
     response = test_client.get("/")
-    
+
     assert response.status_code == 200
+
 
 def test_post_empty_request(test_client):
     response = test_client.post("/")
 
     assert response.status_code == 400
+
 
 def test_post_no_creds(test_client, monkeypatch, mock_token):
     mock_creds = None
@@ -34,6 +38,7 @@ def test_post_no_creds(test_client, monkeypatch, mock_token):
             message[1] for message in session["_flashes"] if message[0] == "message"
         ]
         assert "Failed to obtain credentials." in messages
+
 
 @pytest.mark.skip(reason="Haven't gotten this working yet")
 def test_post_no_build(test_client, monkeypatch, mock_token):

@@ -28,15 +28,19 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
+
 class DirConfig:
     """
     Store dir configuration in a class to allow easy access by emails.py
     """
+
     RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
     CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
     ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
+
 app.dir_config = DirConfig()
+
 
 def create_dirs(config):
     if not os.path.exists(config.RAW_EMAIL_DIR):
@@ -87,12 +91,8 @@ def delete_files():
     raw_dir = app.dir_config.RAW_EMAIL_DIR
 
     attachments = os.listdir(attachments_dir)
-    clean_emails = [
-        email for email in os.listdir(clean_dir) if email.endswith(".txt")
-    ]
-    raw_emails = [
-        email for email in os.listdir(raw_dir) if email.endswith(".eml")
-    ]
+    clean_emails = [email for email in os.listdir(clean_dir) if email.endswith(".txt")]
+    raw_emails = [email for email in os.listdir(raw_dir) if email.endswith(".eml")]
     deleted_emails = 0
     deleted_attachments = 0
 

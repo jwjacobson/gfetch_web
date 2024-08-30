@@ -25,8 +25,6 @@ from auth import get_credentials
 from googleapiclient.discovery import build
 
 
-
-
 def clean_email(email_file, config):
     """
     Take an eml file and output a cleaned txt file.
@@ -127,9 +125,7 @@ def clean_email(email_file, config):
 
     email_content += f"\n{body}"
 
-    email_filename = os.path.join(
-        clean_dir, f"{formatted_date}__{formatted_subj}.txt"
-    )
+    email_filename = os.path.join(clean_dir, f"{formatted_date}__{formatted_subj}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
 
@@ -140,7 +136,7 @@ def clean_email(email_file, config):
 def fetch_emails(email_address, config):
     raw_dir = config.RAW_EMAIL_DIR
     creds = get_credentials()
-    
+
     if not creds:
         return {"error": "Failed to obtain credentials."}
 
@@ -181,9 +177,7 @@ def fetch_emails(email_address, config):
                     .execute()
                 )
                 msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
-                raw_email_path = os.path.join(
-                    raw_dir, f'email_{message["id"]}.eml'
-                )
+                raw_email_path = os.path.join(raw_dir, f'email_{message["id"]}.eml')
                 with open(raw_email_path, "wb") as f:
                     f.write(msg_str)
                 attachments = clean_email(raw_email_path, config)
@@ -196,5 +190,3 @@ def fetch_emails(email_address, config):
             break
 
     return {"total_messages": total_messages, "total_attachments": total_attachments}
-
-
