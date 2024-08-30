@@ -6,6 +6,7 @@ from google.auth.credentials import Credentials
 
 @pytest.fixture()
 def mock_token(tmp_path):
+    """Create a temporary mock token."""
     token = tmp_path / "token.json"
     return token 
 
