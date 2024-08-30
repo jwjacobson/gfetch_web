@@ -29,6 +29,9 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 class DirConfig:
+    """
+    Store dir configuration in a class to allow easy access by emails.py
+    """
     RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
     CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
     ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
