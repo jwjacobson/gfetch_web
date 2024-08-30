@@ -33,9 +33,7 @@ class DirConfig:
     CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
     ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
-
-dir_config = DirConfig()
-app.dir_config = dir_config
+app.dir_config = DirConfig()
 
 def create_dirs(config):
     if not os.path.exists(config.RAW_EMAIL_DIR):
@@ -65,7 +63,7 @@ def index():
     if request.method == "POST":
         email_address = request.form["email_address"]
 
-        result = fetch_emails(email_address, dir_config)
+        result = fetch_emails(email_address, app.dir_config)
 
         if "error" in result:
             flash(result["error"])
@@ -81,9 +79,9 @@ def index():
 
 @app.route("/delete/", methods=["POST"])
 def delete_files():
-    attachments_dir = dir_config.ATTACHMENTS_DIR
-    clean_dir = dir_config.CLEAN_EMAIL_DIR
-    raw_dir = dir_config.RAW_EMAIL_DIR
+    attachments_dir = app.dir_config.ATTACHMENTS_DIR
+    clean_dir = app.dir_config.CLEAN_EMAIL_DIR
+    raw_dir = app.dir_config.RAW_EMAIL_DIR
 
     attachments = os.listdir(attachments_dir)
     clean_emails = [
