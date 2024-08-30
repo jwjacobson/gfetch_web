@@ -4,6 +4,10 @@ from app import app
 from unittest.mock import Mock, patch, create_autospec
 from google.auth.credentials import Credentials
 
+@pytest.fixture()
+def mock_token(tmp_path):
+    token = tmp_path / "token.json"
+    return token 
 
 def test_get(test_client):
     response = test_client.get("/")
@@ -15,9 +19,10 @@ def test_post_empty_request(test_client):
 
     assert response.status_code == 400
 
-def test_post_no_creds(test_client, monkeypatch):
+def test_post_no_creds(test_client, monkeypatch, test_token):
     mock_creds = None
-    monkeypatch.setattr("app.get_credentials", lambda: mock_creds)
+    monkeypatch.setattr("auth.get_credentials", lambda: mock_creds)
+    monkeypatch.setattr("auth.TOKEN", mock_token)
 
     response = test_client.post("/", data={"email_address": "biff@email.com"})
 

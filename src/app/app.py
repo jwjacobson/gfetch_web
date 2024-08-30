@@ -33,7 +33,9 @@ class DirConfig:
     CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
     ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
 
+
 dir_config = DirConfig()
+app.dir_config = dir_config
 
 def create_dirs(config):
     if not os.path.exists(config.RAW_EMAIL_DIR):
@@ -55,7 +57,7 @@ app.config["SESSION_REDIS"] = os.getenv("SESSION_REDIS")
 Session(app)
 
 
-create_dirs(dir_config)
+create_dirs(app.dir_config)
 
 
 @app.route("/", methods=["GET", "POST"])
