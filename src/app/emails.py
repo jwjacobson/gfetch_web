@@ -25,6 +25,67 @@ from auth import get_credentials
 from googleapiclient.discovery import build
 
 
+def fetch_emails(email_address, config):
+    """
+    Fetch all emails from the given email address.
+    """
+    raw_dir = config.RAW_EMAIL_DIR
+    creds = get_credentials()
+
+    if not creds:
+        return {"error": "Failed to obtain credentials."}
+
+    try:
+        service = build("gmail", "v1", credentials=creds)
+    except Exception as e:
+        print(f"Error building Gmail service: {e}")
+        return {"error": f"Error building Gmail service: {e}"}
+
+    query = f"to:{email_address} OR from:{email_address}"
+    next_page_token = None
+    total_messages = 0
+    total_attachments = 0
+
+    while True:
+        if next_page_token:
+            results = (
+                service.users()
+                .messages()
+                .list(userId="me", q=query, pageToken=next_page_token)
+                .execute()
+            )
+        else:
+            results = service.users().messages().list(userId="me", q=query).execute()
+
+        messages = results.get("messages", [])
+        next_page_token = results.get("nextPageToken", None)
+
+        if not messages:
+            print("No messages remain.")
+            break
+        else:
+            for message in messages:
+                msg = (
+                    service.users()
+                    .messages()
+                    .get(userId="me", id=message["id"], format="raw")
+                    .execute()
+                )
+                msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
+                raw_email_path = os.path.join(raw_dir, f'email_{message["id"]}.eml')
+                with open(raw_email_path, "wb") as f:
+                    f.write(msg_str)
+                attachments = clean_email(raw_email_path, config)
+                if attachments:
+                    total_attachments += attachments
+
+            total_messages += len(messages)
+
+        if not next_page_token:
+            break
+
+    return {"total_messages": total_messages, "total_attachments": total_attachments}
+
 def clean_email(email_file, config):
     """
     Take an eml file, output a cleaned txt file, and save any attachments.
@@ -145,6 +206,9 @@ def clean_body(body):
     return body.split("\nOn ")[0]
 
 def build_email_content(date, subject, to, from_, attachments, body):
+    """
+    Construct and return one big email string from all its component parts
+    """
     email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
 
     if attachments:
@@ -155,63 +219,3 @@ def build_email_content(date, subject, to, from_, attachments, body):
     email_content += f"\n{body}"
     return email_content
 
-def fetch_emails(email_address, config):
-    """
-    Fetch all emails from the given email address.
-    """
-    raw_dir = config.RAW_EMAIL_DIR
-    creds = get_credentials()
-
-    if not creds:
-        return {"error": "Failed to obtain credentials."}
-
-    try:
-        service = build("gmail", "v1", credentials=creds)
-    except Exception as e:
-        print(f"Error building Gmail service: {e}")
-        return {"error": f"Error building Gmail service: {e}"}
-
-    query = f"to:{email_address} OR from:{email_address}"
-    next_page_token = None
-    total_messages = 0
-    total_attachments = 0
-
-    while True:
-        if next_page_token:
-            results = (
-                service.users()
-                .messages()
-                .list(userId="me", q=query, pageToken=next_page_token)
-                .execute()
-            )
-        else:
-            results = service.users().messages().list(userId="me", q=query).execute()
-
-        messages = results.get("messages", [])
-        next_page_token = results.get("nextPageToken", None)
-
-        if not messages:
-            print("No messages remain.")
-            break
-        else:
-            for message in messages:
-                msg = (
-                    service.users()
-                    .messages()
-                    .get(userId="me", id=message["id"], format="raw")
-                    .execute()
-                )
-                msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
-                raw_email_path = os.path.join(raw_dir, f'email_{message["id"]}.eml')
-                with open(raw_email_path, "wb") as f:
-                    f.write(msg_str)
-                attachments = clean_email(raw_email_path, config)
-                if attachments:
-                    total_attachments += attachments
-
-            total_messages += len(messages)
-
-        if not next_page_token:
-            break
-
-    return {"total_messages": total_messages, "total_attachments": total_attachments}
