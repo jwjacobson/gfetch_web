@@ -39,18 +39,8 @@ def clean_email(email_file, config):
     subject = msg["Subject"]
     to = msg["To"]
     from_ = msg["From"]
-    attachments = []
+    attachments = get_attachments(msg, attachments_dir)
 
-    # Check for attachments
-    if msg.is_multipart():
-        for part in msg.iter_parts():
-            if part.get_content_disposition() == "attachment":
-                filename = part.get_filename()
-                if filename:
-                    attachments.append(filename)
-                    filepath = os.path.join(attachments_dir, filename)
-                    with open(filepath, "wb") as attachment_file:
-                        attachment_file.write(part.get_payload(decode=True))
     # Format the date
     if date:
         try:
@@ -133,6 +123,18 @@ def clean_email(email_file, config):
     if attachments:
         return len(attachments)
 
+def get_attachments(msg, attachments_dir):
+    attachments = []
+    if msg.is_multipart():
+        for part in msg.iter_parts():
+            if part.get_content_disposition() == "attachment":
+                filename = part.get_filename()
+                if filename:
+                    attachments.append(filename)
+                    filepath = os.path.join(attachments_dir, filename)
+                    with open(filepath, "wb") as attachment_file:
+                        attachment_file.write(part.get_payload(decode=True))
+    return attachments
 
 def fetch_emails(email_address, config):
     """
