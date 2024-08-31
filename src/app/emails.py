@@ -44,11 +44,9 @@ def clean_email(email_file, config):
     body = get_body(msg)
 
     if not body:
-        body = (
-            "This email has no text in the body. Maybe it contained only an attachment?"
-        )
+        body = "This email has no text in the body. Maybe it contained only an attachment?"
 
-    body = body.split("\nOn ")[0]
+    body = clean_body(body)
 
     email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
 
@@ -147,6 +145,12 @@ def get_body(msg):
             charset = "utf-8"
         return msg.get_payload(decode=True).decode(charset, errors="replace")
     return ""
+
+def clean_body(body):
+    """
+    Clean the email body fetched by get_body
+    """
+    return body.split("\nOn ")[0]
 
 def fetch_emails(email_address, config):
     """
