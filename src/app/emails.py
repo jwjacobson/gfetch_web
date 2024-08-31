@@ -63,7 +63,7 @@ def clean_email(email_file, config):
         formatted_date = "Unknown Date"
 
     if not subject:
-        formatted_subj = "no_subject"
+        formatted_subj = "None"
     else:
         subj_list = []
         puncts = {
