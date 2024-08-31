@@ -47,15 +47,7 @@ def clean_email(email_file, config):
         body = "This email has no text in the body. Maybe it contained only an attachment?"
 
     body = clean_body(body)
-
-    email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
-
-    if attachments:
-        email_content += "ATTACHMENTS:\n"
-        for attachment in attachments:
-            email_content += f"- {attachment}\n"
-
-    email_content += f"\n{body}"
+    email_content = build_email_content(date, subject, to, from_, attachments, body)
 
     email_filename = os.path.join(clean_dir, f"{formatted_date}__{formatted_subject}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
@@ -151,6 +143,17 @@ def clean_body(body):
     Clean the email body fetched by get_body
     """
     return body.split("\nOn ")[0]
+
+def build_email_content(date, subject, to, from_, attachments, body):
+    email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
+
+    if attachments:
+        email_content += "ATTACHMENTS:\n"
+        for attachment in attachments:
+            email_content += f"- {attachment}\n"
+
+    email_content += f"\n{body}"
+    return email_content
 
 def fetch_emails(email_address, config):
     """
