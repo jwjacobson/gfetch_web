@@ -27,7 +27,7 @@ from googleapiclient.discovery import build
 
 def fetch_emails(email_address, config):
     """
-    Fetch all emails from the given email address.
+    Fetch all emails from a given email address.
     """
     raw_dir = config.RAW_EMAIL_DIR
     creds = get_credentials()
@@ -88,7 +88,7 @@ def fetch_emails(email_address, config):
 
 def clean_email(email_file, config):
     """
-    Take an eml file, output a cleaned txt file, and save any attachments.
+    Take an eml file, clean and save it as a txt file, and save any attachments.
     """
     clean_dir = config.CLEAN_EMAIL_DIR
     attachments_dir = config.ATTACHMENTS_DIR
@@ -119,7 +119,7 @@ def clean_email(email_file, config):
 
 def set_date(date_str):
     """
-    Create a date string to use in the cleaned email's header
+    Create a date string to use in the cleaned email's header.
     """
     if date_str:
         try:
@@ -133,7 +133,7 @@ def set_date(date_str):
 
 def format_subject(subject_str):
     """
-    Format the subject line for use in the email filename
+    Format the subject line for use in the email filename.
     """
     if not subject:
         return "None"
@@ -167,7 +167,7 @@ def format_subject(subject_str):
 
 def get_attachments(msg, attachments_dir):
     """
-    Download any attachments to the email and return a list of them
+    Download any attachments to the email and return a list of them.
     """
     attachments = []
     if msg.is_multipart():
@@ -183,7 +183,7 @@ def get_attachments(msg, attachments_dir):
 
 def get_body(msg):
     """
-    Get and return the message body as a string
+    Get and return the message body as a string.
     """
     if msg.is_multipart():
         for part in msg.iter_parts():
@@ -201,13 +201,13 @@ def get_body(msg):
 
 def clean_body(body):
     """
-    Clean the email body fetched by get_body
+    Clean the email body fetched by get_body.
     """
     return body.split("\nOn ")[0]
 
 def build_email_content(date, subject, to, from_, attachments, body):
     """
-    Construct and return one big email string from all its component parts
+    Construct and return one big email string from all its component parts.
     """
     email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
 
