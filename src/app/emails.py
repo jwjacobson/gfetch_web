@@ -37,68 +37,11 @@ def clean_email(email_file, config):
 
     date = set_date(msg["Date"])
     subject = msg["Subject"]
+    formatted_subject = format_subject(msg["Subject"])
     to = msg["To"]
     from_ = msg["From"]
     attachments = get_attachments(msg, attachments_dir)
-
-    # Format the date
-    if date:
-        try:
-            date_obj = email.utils.parsedate_to_datetime(date)
-            formatted_date = date_obj.strftime("%Y-%m-%d")
-        except Exception as e:
-            print(f"Error parsing date: {e}")
-            formatted_date = "Unknown"
-    else:
-        formatted_date = "Unknown"
-
-    # Create a cleaned subject line for use in filenames
-    if not subject:
-        formatted_subj = "None"
-    else:
-        subj_list = []
-        puncts = {
-            ",",
-            " ",
-            ".",
-            "—",
-            "-",
-            "'",
-            '"',
-            ":",
-            ";",
-            "!",
-            "?",
-            "(",
-            ")",
-            "/",
-            "\\",
-        }
-        for char in subject:
-            if char in puncts:
-                continue
-            elif char == " ":
-                subj_list.append("_")
-            else:
-                subj_list.append(char.lower())
-
-        formatted_subj = "".join(subj_list)
-
-    body = ""
-
-    if msg.is_multipart():
-        for part in msg.iter_parts():
-            if part.get_content_type() == "text/plain":
-                charset = part.get_content_charset()
-                if charset is None:
-                    charset = "utf-8"
-                body = part.get_payload(decode=True).decode(charset, errors="replace")
-                break
-    else:
-        charset = msg.get_content_charset()
-        if charset is None:
-            charset = "utf-8"
-        body = msg.get_payload(decode=True).decode(charset, errors="replace")
+    body = get_body(msg)
 
     if not body:
         body = (
@@ -116,7 +59,7 @@ def clean_email(email_file, config):
 
     email_content += f"\n{body}"
 
-    email_filename = os.path.join(clean_dir, f"{formatted_date}__{formatted_subj}.txt")
+    email_filename = os.path.join(clean_dir, f"{formatted_date}__{formatted_subject}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
 
@@ -137,6 +80,40 @@ def set_date(date_str):
     else:
         return "Unknown"
 
+def format_subject(subject_str):
+    """
+    Format the subject line for use in the email filename
+    """
+    if not subject:
+        return "None"
+    subj_list = []
+    puncts = {
+        ",",
+        " ",
+        ".",
+        "—",
+        "-",
+        "'",
+        '"',
+        ":",
+        ";",
+        "!",
+        "?",
+        "(",
+        ")",
+        "/",
+        "\\",
+    }
+    for char in subject:
+        if char in puncts:
+            continue
+        elif char == " ":
+            subj_list.append("_")
+        else:
+            subj_list.append(char.lower())
+
+    return "".join(subj_list)
+
 def get_attachments(msg, attachments_dir):
     """
     Download any attachments to the email and return a list of them
@@ -152,6 +129,24 @@ def get_attachments(msg, attachments_dir):
                     with open(filepath, "wb") as attachment_file:
                         attachment_file.write(part.get_payload(decode=True))
     return attachments
+
+def get_body(msg):
+    """
+    Get and return the message body as a string
+    """
+    if msg.is_multipart():
+        for part in msg.iter_parts():
+            if part.get_content_type() == "text/plain":
+                charset = part.get_content_charset()
+                if charset is None:
+                    charset = "utf-8"
+                return part.get_payload(decode=True).decode(charset, errors="replace")
+    else:
+        charset = msg.get_content_charset()
+        if charset is None:
+            charset = "utf-8"
+        return msg.get_payload(decode=True).decode(charset, errors="replace")
+    return ""
 
 def fetch_emails(email_address, config):
     """
