@@ -41,6 +41,7 @@ def clean_email(email_file, config):
     from_ = msg["From"]
     attachments = []
 
+    # Check for attachments
     if msg.is_multipart():
         for part in msg.iter_parts():
             if part.get_content_disposition() == "attachment":
@@ -50,7 +51,6 @@ def clean_email(email_file, config):
                     filepath = os.path.join(attachments_dir, filename)
                     with open(filepath, "wb") as attachment_file:
                         attachment_file.write(part.get_payload(decode=True))
-                break
 
     if date:
         try:
