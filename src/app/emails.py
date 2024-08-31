@@ -27,7 +27,7 @@ from googleapiclient.discovery import build
 
 def clean_email(email_file, config):
     """
-    Take an eml file and output a cleaned txt file.
+    Take an eml file, output a cleaned txt file, and save any attachments.
     """
     clean_dir = config.CLEAN_EMAIL_DIR
     attachments_dir = config.ATTACHMENTS_DIR
@@ -51,17 +51,18 @@ def clean_email(email_file, config):
                     filepath = os.path.join(attachments_dir, filename)
                     with open(filepath, "wb") as attachment_file:
                         attachment_file.write(part.get_payload(decode=True))
-
+    # Format the date
     if date:
         try:
             date_obj = email.utils.parsedate_to_datetime(date)
             formatted_date = date_obj.strftime("%Y-%m-%d")
         except Exception as e:
             print(f"Error parsing date: {e}")
-            formatted_date = "Unknown Date"
+            formatted_date = "Unknown"
     else:
-        formatted_date = "Unknown Date"
+        formatted_date = "Unknown"
 
+    # Create a cleaned subject line for use in filenames
     if not subject:
         formatted_subj = "None"
     else:
@@ -134,6 +135,9 @@ def clean_email(email_file, config):
 
 
 def fetch_emails(email_address, config):
+    """
+    Fetch all emails from the given email address.
+    """
     raw_dir = config.RAW_EMAIL_DIR
     creds = get_credentials()
 
