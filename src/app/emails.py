@@ -58,9 +58,9 @@ def clean_email(email_file, config):
             formatted_date = date_obj.strftime("%Y-%m-%d")
         except Exception as e:
             print(f"Error parsing date: {e}")
-            formatted_date = "unknown_date"
+            formatted_date = "Unknown Date"
     else:
-        formatted_date = "unknown_date"
+        formatted_date = "Unknown Date"
 
     if not subject:
         formatted_subj = "no_subject"
