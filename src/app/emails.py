@@ -35,7 +35,7 @@ def clean_email(email_file, config):
     with open(email_file, "rb") as f:
         msg = BytesParser(policy=policy.default).parse(f)
 
-    date = msg["Date"]
+    date = set_date(msg["Date"])
     subject = msg["Subject"]
     to = msg["To"]
     from_ = msg["From"]
@@ -123,7 +123,24 @@ def clean_email(email_file, config):
     if attachments:
         return len(attachments)
 
+def set_date(date_str):
+    """
+    Create a date string to use in the cleaned email's header
+    """
+    if date_str:
+        try:
+            date_obj = email.utils.parsedate_to_datetime(date)
+            return date_obj.strftime("%Y-%m-%d")
+        except Exception as e:
+            print(f"Error parsing date: {e}")
+            return "Unknown"
+    else:
+        return "Unknown"
+
 def get_attachments(msg, attachments_dir):
+    """
+    Download any attachments to the email and return a list of them
+    """
     attachments = []
     if msg.is_multipart():
         for part in msg.iter_parts():
