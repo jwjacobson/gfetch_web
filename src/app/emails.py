@@ -24,6 +24,7 @@ from email.parser import BytesParser
 from auth import get_credentials
 from googleapiclient.discovery import build
 
+import ipdb
 
 def fetch_emails(email_address, config):
     """
@@ -218,4 +219,3 @@ def build_email_content(date, subject, to, from_, attachments, body):
 
     email_content += f"\n{body}"
     return email_content
-
