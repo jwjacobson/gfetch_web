@@ -124,7 +124,7 @@ def set_date(date_str):
     """
     if date_str:
         try:
-            date_obj = email.utils.parsedate_to_datetime(date)
+            date_obj = email.utils.parsedate_to_datetime(date_str)
             return date_obj.strftime("%Y-%m-%d")
         except Exception as e:
             print(f"Error parsing date: {e}")
