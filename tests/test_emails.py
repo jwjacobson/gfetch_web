@@ -16,10 +16,12 @@ def raw_no_attachments():
         message = BytesParser(policy=policy.default).parse(raw_email)
         yield message
 
-def test_set_date(temp_dirs, raw_no_attachments):
+def test_set_date_no_attachments(raw_no_attachments):
     message = raw_no_attachments
     raw_date = message["Date"]
     result = set_date(raw_date)
     expected = '2013-07-05'
 
     assert result == expected
+
+# def test_format_subject_no_attachments()
