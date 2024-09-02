@@ -4,7 +4,7 @@ import pytest
 from email import policy
 from email.parser import BytesParser
 
-from emails import format_subject, get_attachments, get_body, set_date 
+from emails import clean_body, format_subject, get_attachments, get_body, set_date 
 
 import ipdb
 
@@ -43,5 +43,13 @@ def test_get_body(raw_no_attachments):
     message = raw_no_attachments
     result = get_body(message)
     expected = "Hey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n\nOn Mon, Jul 1, 2013 at 5:09 AM, Will Jakobson <will@jmail.com>wrote:\n\n> hey that old link is broken, this one's better, check it\n> out quick\n> http://www.youtube.com/watch?v=r-xd4JQEbfE\n>\n"
+
+    assert result == expected
+
+def test_clean_body(raw_no_attachments):
+    message = raw_no_attachments
+    body = get_body(message)
+    result = clean_body(body)
+    expected = 'Hey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n'
 
     assert result == expected
