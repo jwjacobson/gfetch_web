@@ -4,7 +4,7 @@ import pytest
 from email import policy
 from email.parser import BytesParser
 
-from emails import clean_body, format_subject, get_attachments, get_body, set_date 
+from emails import build_email_content, clean_body, format_subject, get_attachments, get_body, set_date 
 
 import ipdb
 
@@ -51,5 +51,19 @@ def test_clean_body(raw_no_attachments):
     body = get_body(message)
     result = clean_body(body)
     expected = 'Hey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n'
+
+    assert result == expected
+
+def test_build_email_content(raw_no_attachments, temp_dirs):
+    message = raw_no_attachments
+    date = set_date(message["Date"])
+    subject = message["Subject"]
+    to = message["To"]
+    from_ = message["From"]
+    attachments = get_attachments(message, temp_dirs["attachments_dir"])
+    body = clean_body(get_body(message))
+
+    result = build_email_content(date, subject, to, from_, attachments, body)
+    expected = 'DATE: 2013-07-05\nSUBJECT: Re:\nTO: Will Jakobson <will@jmail.com>\nFROM: Stu Bettler <stu@bmail.com>\n\nHey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n'
 
     assert result == expected
