@@ -4,7 +4,7 @@ import pytest
 from email import policy
 from email.parser import BytesParser
 
-from emails import set_date
+from emails import set_date, format_subject
 
 import ipdb
 
@@ -24,4 +24,10 @@ def test_set_date_no_attachments(raw_no_attachments):
 
     assert result == expected
 
-# def test_format_subject_no_attachments()
+def test_format_subject_re_only(raw_no_attachments):
+    message = raw_no_attachments
+    subject = message["Subject"]
+    result = format_subject(subject)
+    expected = 're'
+
+    assert result == expected

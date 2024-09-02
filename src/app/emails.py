@@ -136,7 +136,7 @@ def format_subject(subject_str):
     """
     Format the subject line for use in the email filename.
     """
-    if not subject:
+    if not subject_str:
         return "None"
     subj_list = []
     puncts = {
@@ -156,7 +156,7 @@ def format_subject(subject_str):
         "/",
         "\\",
     }
-    for char in subject:
+    for char in subject_str:
         if char in puncts:
             continue
         elif char == " ":
