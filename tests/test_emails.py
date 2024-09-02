@@ -10,7 +10,7 @@ import ipdb
 
 @pytest.fixture()
 def raw_no_attachments():
-    raw_email_path = 'tests/raw_no_attachments.eml'
+    raw_email_path = os.path.join(os.path.dirname(__file__), 'raw_no_attachments.eml')
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
