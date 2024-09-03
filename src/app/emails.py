@@ -171,15 +171,19 @@ def get_attachments(msg, attachments_dir):
     Download any attachments to the email and return a list of them.
     """
     attachments = []
-    if msg.is_multipart():
-        for part in msg.iter_parts():
-            if part.get_content_disposition() == "attachment":
-                filename = part.get_filename()
-                if filename:
-                    attachments.append(filename)
-                    filepath = os.path.join(attachments_dir, filename)
-                    with open(filepath, "wb") as attachment_file:
-                        attachment_file.write(part.get_payload(decode=True))
+   
+    if not msg.is_multipart():
+        return attachments
+   
+    for part in msg.iter_parts():
+        if part.get_content_disposition() != "attachment" or not part.get_filename:
+            continue
+        filename = part.get_filename()
+        attachments.append(filename)
+        filepath = os.path.join(attachments_dir, filename)
+        with open(filepath, "wb") as attachment_file:
+            attachment_file.write(part.get_payload(decode=True))
+   
     return attachments
 
 def get_body(msg):
