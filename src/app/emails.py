@@ -186,18 +186,16 @@ def get_body(msg):
     """
     Get and return the message body as a string.
     """
-    if msg.is_multipart():
-        for part in msg.iter_parts():
-            if part.get_content_type() == "text/plain":
-                charset = part.get_content_charset()
-                if charset is None:
-                    charset = "utf-8"
-                return part.get_payload(decode=True).decode(charset, errors="replace")
-    else:
-        charset = msg.get_content_charset()
-        if charset is None:
-            charset = "utf-8"
+    charset = msg.get_content_charset() or "utf-8"
+
+    if not msg.is_multipart():
         return msg.get_payload(decode=True).decode(charset, errors="replace")
+
+    for part in msg.iter_parts():
+        if part.get_content_type() == "text/plain":
+            part_charset = part.get_content_charset() or "utf-8"
+            return part.get_payload(decode=True).decode(charset, errors="replace")
+
     return ""
 
 def clean_body(body):
