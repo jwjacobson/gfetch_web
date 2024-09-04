@@ -16,6 +16,14 @@ def raw_no_attachments():
         message = BytesParser(policy=policy.default).parse(raw_email)
         yield message
 
+@pytest.fixture()
+def raw_one_attachment():
+    raw_email_path = os.path.join(os.path.dirname(__file__), 'raw_one_attachment.eml')
+
+    with open(raw_email_path, "rb") as raw_email:
+        message = BytesParser(policy=policy.default).parse(raw_email)
+        yield message
+
 def test_set_date_no_attachments(raw_no_attachments):
     message = raw_no_attachments
     raw_date = message["Date"]
@@ -38,6 +46,15 @@ def test_get_attachments_no_attachments(raw_no_attachments, temp_dirs):
     expected = []
 
     assert result == expected
+
+def test_get_attachments_one_attachment(raw_one_attachment, temp_dirs):
+    message = raw_one_attachment
+    result = get_attachments(message, temp_dirs["attachments_dir"])
+    expected = ['beautifulandstunning.png']
+
+    assert result == expected
+    assert len(result) == 1
+
 
 def test_get_body(raw_no_attachments):
     message = raw_no_attachments

@@ -111,7 +111,7 @@ def clean_email(email_file, config):
     body = clean_body(body)
     email_content = build_email_content(date, subject, to, from_, attachments, body)
 
-    email_filename = os.path.join(clean_dir, f"{formatted_date}__{formatted_subject}.txt")
+    email_filename = os.path.join(clean_dir, f"{date}__{formatted_subject}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
 
