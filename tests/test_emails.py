@@ -68,22 +68,35 @@ def test_get_attachments_no_attachments(raw_no_attachments, temp_dirs):
     expected = []
 
     assert result == expected
+    assert not os.listdir(attachments_dir)
 
 def test_get_attachments_one_attachment(raw_one_attachment, temp_dirs):
     message = raw_one_attachment[0]
-    result = get_attachments(message, temp_dirs["attachments_dir"])
+    attachments_dir = temp_dirs["attachments_dir"]
+    result = get_attachments(message, attachments_dir)
     expected = ['beautifulandstunning.png']
 
     assert result == expected
     assert len(result) == 1
+    assert len(os.listdir(attachments_dir)) == 1
+    for file in result:
+        assert file in os.listdir(attachments_dir)
+    for file in os.listdir(attachments_dir):
+        assert file in expected
 
 def test_get_attachments_many_attachments(raw_many_attachments, temp_dirs):
     message = raw_many_attachments[0]
-    result = get_attachments(message, temp_dirs["attachments_dir"])
+    attachments_dir = temp_dirs["attachments_dir"]
+    result = get_attachments(message, attachments_dir)
     expected = ['ADVICE TO NEW TEACHERS.pdf', 'CREDULOUDLY RAPT.pdf', 'HOW TO GRADE IMPERSONALLY.pdf', "I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf", 'THE DISASTER ODDS.pdf', 'TRESSPASSING AT THE PUMPING STATION.pdf']
 
     assert result == expected
     assert len(result) == 6
+    assert len(os.listdir(attachments_dir)) == 6
+    for file in result:
+        assert file in os.listdir(attachments_dir)
+    for file in os.listdir(attachments_dir):
+        assert file in expected
 
 def test_get_body(raw_no_attachments):
     message = raw_no_attachments[0]

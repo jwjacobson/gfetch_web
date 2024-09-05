@@ -10,7 +10,7 @@ def test_client():
         yield client
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def temp_dirs(tmp_path_factory):
     """
     Create temporary directories to delete files from.
