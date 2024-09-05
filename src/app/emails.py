@@ -74,7 +74,7 @@ def fetch_emails(email_address, config):
                 )
                 msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
                 raw_email_path = os.path.join(raw_dir, f'email_{message["id"]}.eml')
-                print(f'Retrieving email {raw_email_path}.')
+                print(f'\nRetrieving message {raw_email_path.split('/')[-1]}.')
                 with open(raw_email_path, "wb") as f:
                     f.write(msg_str)
                 attachments = clean_email(raw_email_path, config)
@@ -86,15 +86,15 @@ def fetch_emails(email_address, config):
         if not next_page_token:
             break
 
-    print('Done.')
-    print(f'Retrieved {total_messages} emails and {total_attachments} attachments.')
+    print('\nDone.')
+    print(f'Retrieved {total_messages} messages and {total_attachments} attachments.')
     return {"total_messages": total_messages, "total_attachments": total_attachments}
 
 def clean_email(email_file, config):
     """
     Take an eml file, clean and save it as a txt file, and save any attachments.
     """
-    print(f"Cleaning email {email_file}.")
+    print(f"Cleaning email {email_file.split('/')[-1]}.")
     clean_dir = config.CLEAN_EMAIL_DIR
     attachments_dir = config.ATTACHMENTS_DIR
 
@@ -184,6 +184,7 @@ def get_attachments(msg, attachments_dir):
         if part.get_content_disposition() != "attachment" or not part.get_filename:
             continue
         filename = part.get_filename()
+        print(f'Found attachment: {filename}')
         attachments.append(filename)
         filepath = os.path.join(attachments_dir, filename)
         with open(filepath, "wb") as attachment_file:
