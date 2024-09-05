@@ -11,6 +11,9 @@ import ipdb
 
 @pytest.fixture()
 def raw_no_attachments():
+    """
+    Read a raw email file with no attachments.
+    """
     filename = 'raw_no_attachments.eml'
     raw_email_path = os.path.join(os.path.dirname(__file__), filename)
 
@@ -20,6 +23,10 @@ def raw_no_attachments():
 
 @pytest.fixture()
 def raw_one_attachment():
+    """
+    Read a raw email file with one attachment.
+    """
+   
     filename = 'raw_one_attachment.eml'
     raw_email_path = os.path.join(os.path.dirname(__file__), filename)
 
@@ -29,6 +36,9 @@ def raw_one_attachment():
 
 @pytest.fixture()
 def raw_many_attachments():
+    """
+    Read a raw email file with many attachments.
+    """
     filename = 'raw_many_attachments.eml'
     raw_email_path = os.path.join(os.path.dirname(__file__), filename)
 
