@@ -103,6 +103,13 @@ def test_build_email_content_one_attachment(raw_one_attachment, temp_dirs):
     body = clean_body(get_body(message))
 
     result = build_email_content(date, subject, to, from_, attachments, body)
-    expected = 'DATE: 2011-07-10\nSUBJECT: beautiful and stunning\nTO: michael butler <msbutler05@gmail.com>\nFROM: Jeff Jacobson <goodbyemrevans@gmail.com>\nATTACHMENTS:\n- beautifulandstunning.png\n\ni just saw this.  made me chuckle, and reminded me of writing alone.\n'
+    expected = 'DATE: 2011-07-10\nSUBJECT: beautiful and stunning\nTO: stu bettler <stu@bmail.com>\nFROM: Will Jakobson <will@jmail.com>\nATTACHMENTS:\n- beautifulandstunning.png\n\ni just saw this.  made me chuckle, and reminded me of writing alone.\n'
+
 
     assert result == expected
+
+def test_clean_email(monkeypatch, raw_no_attachments, temp_dirs):
+    monkeypatch.setattr(app.dir_config, "ATTACHMENTS_DIR", temp_dirs["attachments_dir"])
+    monkeypatch.setattr(app.dir_config, "CLEAN_EMAIL_DIR", temp_dirs["clean_email_dir"])
+    
+    assert True

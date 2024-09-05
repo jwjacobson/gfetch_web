@@ -74,6 +74,7 @@ def fetch_emails(email_address, config):
                 )
                 msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
                 raw_email_path = os.path.join(raw_dir, f'email_{message["id"]}.eml')
+                print(f'Retrieving email {raw_email_path}.')
                 with open(raw_email_path, "wb") as f:
                     f.write(msg_str)
                 attachments = clean_email(raw_email_path, config)
@@ -85,18 +86,22 @@ def fetch_emails(email_address, config):
         if not next_page_token:
             break
 
+    print('Done.')
+    print(f'Retrieved {total_messages} emails and {total_attachments} attachments.')
     return {"total_messages": total_messages, "total_attachments": total_attachments}
 
 def clean_email(email_file, config):
     """
     Take an eml file, clean and save it as a txt file, and save any attachments.
     """
+    print(f"Cleaning email {email_file}.")
     clean_dir = config.CLEAN_EMAIL_DIR
     attachments_dir = config.ATTACHMENTS_DIR
 
     with open(email_file, "rb") as f:
         msg = BytesParser(policy=policy.default).parse(f)
 
+    raw_file = email_file.split('/')[-1]
     date = set_date(msg["Date"])
     subject = msg["Subject"]
     formatted_subject = format_subject(msg["Subject"])
@@ -109,7 +114,7 @@ def clean_email(email_file, config):
         body = "This email has no text in the body. Maybe it contained only an attachment?"
 
     body = clean_body(body)
-    email_content = build_email_content(date, subject, to, from_, attachments, body)
+    email_content = build_email_content(raw_file, date, subject, to, from_, attachments, body)
 
     email_filename = os.path.join(clean_dir, f"{date}__{formatted_subject}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
@@ -208,11 +213,11 @@ def clean_body(body):
     """
     return body.split("\nOn ")[0]
 
-def build_email_content(date, subject, to, from_, attachments, body):
+def build_email_content(raw_file, date, subject, to, from_, attachments, body):
     """
     Construct and return one big email string from all its component parts.
     """
-    email_content = f"DATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
+    email_content = f"***{raw_file}***\nDATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
 
     if attachments:
         email_content += "ATTACHMENTS:\n"
