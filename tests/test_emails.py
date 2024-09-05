@@ -4,6 +4,7 @@ import pytest
 from email import policy
 from email.parser import BytesParser
 
+from app import app
 from emails import build_email_content, clean_body, format_subject, get_attachments, get_body, set_date 
 
 import ipdb
@@ -19,11 +20,12 @@ def raw_no_attachments():
 
 @pytest.fixture()
 def raw_one_attachment():
-    raw_email_path = os.path.join(os.path.dirname(__file__), 'raw_one_attachment.eml')
+    filename = 'raw_one_attachment.eml'
+    raw_email_path = os.path.join(os.path.dirname(__file__), filename)
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
-        yield message
+        yield message, filename
 
 def test_set_date_no_attachments(raw_no_attachments):
     message = raw_no_attachments[0]
@@ -42,7 +44,7 @@ def test_format_subject_re_only(raw_no_attachments):
     assert result == expected
 
 def test_format_subject_normal_text_no_caps(raw_one_attachment):
-    message = raw_one_attachment
+    message = raw_one_attachment[0]
     subject = message["Subject"]
     result = format_subject(subject)
     expected = 'beautifulandstunning'
@@ -57,7 +59,7 @@ def test_get_attachments_no_attachments(raw_no_attachments, temp_dirs):
     assert result == expected
 
 def test_get_attachments_one_attachment(raw_one_attachment, temp_dirs):
-    message = raw_one_attachment
+    message = raw_one_attachment[0]
     result = get_attachments(message, temp_dirs["attachments_dir"])
     expected = ['beautifulandstunning.png']
 
@@ -96,7 +98,8 @@ def test_build_email_content_no_attachments(raw_no_attachments, temp_dirs):
     assert result == expected
 
 def test_build_email_content_one_attachment(raw_one_attachment, temp_dirs):
-    message = raw_one_attachment
+    message, filename = raw_one_attachment
+    raw_file = filename
     date = set_date(message["Date"])
     subject = message["Subject"]
     to = message["To"]
@@ -104,8 +107,8 @@ def test_build_email_content_one_attachment(raw_one_attachment, temp_dirs):
     attachments = get_attachments(message, temp_dirs["attachments_dir"])
     body = clean_body(get_body(message))
 
-    result = build_email_content(date, subject, to, from_, attachments, body)
-    expected = 'DATE: 2011-07-10\nSUBJECT: beautiful and stunning\nTO: stu bettler <stu@bmail.com>\nFROM: Will Jakobson <will@jmail.com>\nATTACHMENTS:\n- beautifulandstunning.png\n\ni just saw this.  made me chuckle, and reminded me of writing alone.\n'
+    result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
+    expected = '***raw_one_attachment.eml***\nDATE: 2011-07-10\nSUBJECT: beautiful and stunning\nTO: stu bettler <stu@bmail.com>\nFROM: Will Jakobson <will@jmail.com>\nATTACHMENTS:\n- beautifulandstunning.png\n\ni just saw this.  made me chuckle, and reminded me of writing alone.\n'
 
 
     assert result == expected
