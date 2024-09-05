@@ -27,6 +27,16 @@ def raw_one_attachment():
         message = BytesParser(policy=policy.default).parse(raw_email)
         yield message, filename
 
+@pytest.fixture()
+def raw_many_attachments():
+    filename = 'raw_many_attachment.eml'
+    raw_email_path = os.path.join(os.path.dirname(__file__), filename)
+
+    with open(raw_email_path, "rb") as raw_email:
+        message = BytesParser(policy=policy.default).parse(raw_email)
+        yield message, filename
+
+
 def test_set_date_no_attachments(raw_no_attachments):
     message = raw_no_attachments[0]
     raw_date = message["Date"]
