@@ -71,7 +71,7 @@ def test_clean_body(raw_no_attachments):
 
     assert result == expected
 
-def test_build_email_content(raw_no_attachments, temp_dirs):
+def test_build_email_content_no_attachments(raw_no_attachments, temp_dirs):
     message = raw_no_attachments
     date = set_date(message["Date"])
     subject = message["Subject"]
@@ -82,5 +82,19 @@ def test_build_email_content(raw_no_attachments, temp_dirs):
 
     result = build_email_content(date, subject, to, from_, attachments, body)
     expected = 'DATE: 2013-07-05\nSUBJECT: Re:\nTO: Will Jakobson <will@jmail.com>\nFROM: Stu Bettler <stu@bmail.com>\n\nHey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n'
+
+    assert result == expected
+
+def test_build_email_content_one_attachment(raw_one_attachment, temp_dirs):
+    message = raw_one_attachment
+    date = set_date(message["Date"])
+    subject = message["Subject"]
+    to = message["To"]
+    from_ = message["From"]
+    attachments = get_attachments(message, temp_dirs["attachments_dir"])
+    body = clean_body(get_body(message))
+
+    result = build_email_content(date, subject, to, from_, attachments, body)
+    expected = 'DATE: 2011-07-10\nSUBJECT: beautiful and stunning\nTO: michael butler <msbutler05@gmail.com>\nFROM: Jeff Jacobson <goodbyemrevans@gmail.com>\nATTACHMENTS:\n- beautifulandstunning.png\n\ni just saw this.  made me chuckle, and reminded me of writing alone.\n'
 
     assert result == expected
