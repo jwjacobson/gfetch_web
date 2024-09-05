@@ -40,6 +40,14 @@ def test_format_subject_re_only(raw_no_attachments):
 
     assert result == expected
 
+def test_format_subject_normal_text_no_caps(raw_one_attachment):
+    message = raw_one_attachment
+    subject = message["Subject"]
+    result = format_subject(subject)
+    expected = 'beautifulandstunning'
+
+    assert result == expected
+
 def test_get_attachments_no_attachments(raw_no_attachments, temp_dirs):
     message = raw_no_attachments
     result = get_attachments(message, temp_dirs["attachments_dir"])
