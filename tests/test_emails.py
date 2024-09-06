@@ -234,6 +234,7 @@ def test_clean_email_many_attachments(monkeypatch, raw_many_attachments, temp_di
         "THE DISASTER ODDS.pdf",
         "TRESSPASSING AT THE PUMPING STATION.pdf",
     ]
+    
     assert not os.listdir(clean_dir) # Make sure the target directories are empty for comparison
     assert not os.listdir(attachments_dir)
 
