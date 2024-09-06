@@ -1,6 +1,6 @@
 import pytest
 
-from app import app
+from app import app, DirConfig
 from unittest.mock import Mock, patch, create_autospec
 from google.auth.credentials import Credentials
 

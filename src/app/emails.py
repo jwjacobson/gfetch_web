@@ -26,6 +26,7 @@ from googleapiclient.discovery import build
 
 import ipdb
 
+
 def fetch_emails(email_address, config):
     """
     Fetch all emails from a given email address.
@@ -86,9 +87,10 @@ def fetch_emails(email_address, config):
         if not next_page_token:
             break
 
-    print('\nDone.')
-    print(f'Retrieved {total_messages} messages and {total_attachments} attachments.')
+    print("\nDone.")
+    print(f"Retrieved {total_messages} messages and {total_attachments} attachments.")
     return {"total_messages": total_messages, "total_attachments": total_attachments}
+
 
 def clean_email(email_file, config):
     """
@@ -101,7 +103,7 @@ def clean_email(email_file, config):
     with open(email_file, "rb") as f:
         msg = BytesParser(policy=policy.default).parse(f)
 
-    raw_file = email_file.split('/')[-1]
+    raw_file = email_file.split("/")[-1]
     date = set_date(msg["Date"])
     subject = msg["Subject"]
     formatted_subject = format_subject(msg["Subject"])
@@ -111,10 +113,14 @@ def clean_email(email_file, config):
     body = get_body(msg)
 
     if not body:
-        body = "This email has no text in the body. Maybe it contained only an attachment?"
+        body = (
+            "This email has no text in the body. Maybe it contained only an attachment?"
+        )
 
     body = clean_body(body)
-    email_content = build_email_content(raw_file, date, subject, to, from_, attachments, body)
+    email_content = build_email_content(
+        raw_file, date, subject, to, from_, attachments, body
+    )
 
     email_filename = os.path.join(clean_dir, f"{date}__{formatted_subject}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
@@ -122,6 +128,7 @@ def clean_email(email_file, config):
 
     if attachments:
         return len(attachments)
+
 
 def set_date(date_str):
     """
@@ -136,6 +143,7 @@ def set_date(date_str):
             return "Unknown"
     else:
         return "Unknown"
+
 
 def format_subject(subject_str):
     """
@@ -171,26 +179,28 @@ def format_subject(subject_str):
 
     return "".join(subj_list)
 
+
 def get_attachments(msg, attachments_dir):
     """
     Download any attachments to the email and return a list of them.
     """
     attachments = []
-   
+
     if not msg.is_multipart():
         return attachments
-   
+
     for part in msg.iter_parts():
         if part.get_content_disposition() != "attachment" or not part.get_filename:
             continue
         filename = part.get_filename()
-        print(f'Found attachment: {filename}')
+        print(f"Found attachment: {filename}")
         attachments.append(filename)
         filepath = os.path.join(attachments_dir, filename)
         with open(filepath, "wb") as attachment_file:
             attachment_file.write(part.get_payload(decode=True))
-   
+
     return attachments
+
 
 def get_body(msg):
     """
@@ -208,17 +218,21 @@ def get_body(msg):
 
     return ""
 
+
 def clean_body(body):
     """
     Clean the email body fetched by get_body.
     """
     return body.split("\nOn ")[0]
 
+
 def build_email_content(raw_file, date, subject, to, from_, attachments, body):
     """
     Construct and return one big email string from all its component parts.
     """
-    email_content = f"***{raw_file}***\nDATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
+    email_content = (
+        f"***{raw_file}***\nDATE: {date}\nSUBJECT: {subject}\nTO: {to}\nFROM: {from_}\n"
+    )
 
     if attachments:
         email_content += "ATTACHMENTS:\n"
