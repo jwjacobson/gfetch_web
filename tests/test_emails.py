@@ -150,7 +150,7 @@ def test_clean_body(raw_no_attachments):
 
 
 def test_build_email_content_no_attachments(raw_no_attachments, temp_dirs):
-    message, filename = raw_no_attachments
+    message, filename = raw_no_attachments[0], raw_no_attachments[1]
     raw_file = filename
     date = set_date(message["Date"])
     subject = message["Subject"]
@@ -166,7 +166,7 @@ def test_build_email_content_no_attachments(raw_no_attachments, temp_dirs):
 
 
 def test_build_email_content_one_attachment(raw_one_attachment, temp_dirs):
-    message, filename = raw_one_attachment
+    message, filename = raw_one_attachment[0], raw_one_attachment[1]
     raw_file = filename
     date = set_date(message["Date"])
     subject = message["Subject"]
