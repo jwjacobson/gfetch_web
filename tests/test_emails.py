@@ -132,10 +132,17 @@ def test_get_attachments_many_attachments(many_attachments, temp_dirs):
         assert file in expected
 
 
-def test_get_body(no_attachments):
+def test_get_body_happy(no_attachments):
     message = no_attachments[0]
     result = get_body(message)
     expected = "Hey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n\nOn Mon, Jul 1, 2013 at 5:09 AM, Will Jakobson <will@jmail.com>wrote:\n\n> hey that old link is broken, this one's better, check it\n> out quick\n> http://www.youtube.com/watch?v=r-xd4JQEbfE\n>\n"
+
+    assert result == expected
+
+def test_get_body_nested(many_attachments):
+    message = many_attachments[0]
+    result = get_body(message)
+    expected = 'Just some drafts.\n'
 
     assert result == expected
 
