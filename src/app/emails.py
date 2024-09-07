@@ -110,14 +110,8 @@ def clean_email(email_file, config):
     to = msg["To"]
     from_ = msg["From"]
     attachments = get_attachments(msg, attachments_dir)
-    body = get_body(msg)
+    body = clean_body(get_body(msg))
 
-    if not body:
-        body = (
-            "This email has no text in the body. Maybe it contained only an attachment?"
-        )
-
-    body = clean_body(body)
     email_content = build_email_content(
         raw_file, date, subject, to, from_, attachments, body
     )
@@ -206,18 +200,21 @@ def get_body(msg):
     """
     Get and return the message body as a string.
     """
-    charset = msg.get_content_charset() or "utf-8"
-
     if not msg.is_multipart():
+        charset = msg.get_content_charset() or "utf-8"
         return msg.get_payload(decode=True).decode(charset, errors="replace")
+    
+    plain_text = None
 
-    for part in msg.iter_parts():
-        if part.get_content_type() == "text/plain":
-            part_charset = part.get_content_charset() or "utf-8"
-            return part.get_payload(decode=True).decode(charset, errors="replace")
+    for part in msg.walk():  
+        content_type = part.get_content_type()
+        charset = part.get_content_charset() or "utf-8"
+        
+        if content_type == "text/plain":
+            plain_text = part.get_payload(decode=True).decode(charset, errors="replace")
+            break  
 
-    return ""
-
+    return plain_text or "This email has no text in the body."
 
 def clean_body(body):
     """
@@ -240,4 +237,4 @@ def build_email_content(raw_file, date, subject, to, from_, attachments, body):
             email_content += f"- {attachment}\n"
 
     email_content += f"\n{body}"
-    return email_content
+    return email_content    

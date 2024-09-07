@@ -171,3 +171,4 @@ cleaned_emails/
 scratch*.py
 node_modules/
 searcher.py
+test_many_attachments.eml
