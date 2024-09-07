@@ -157,8 +157,7 @@ def test_clean_body(no_attachments):
 
 
 def test_build_email_content_no_attachments(no_attachments, temp_dirs):
-    message, filename = no_attachments[0], no_attachments[1]
-    raw_file = filename
+    message, raw_file = no_attachments[0], no_attachments[1]
     date = set_date(message["Date"])
     subject = message["Subject"]
     to = message["To"]
@@ -173,8 +172,7 @@ def test_build_email_content_no_attachments(no_attachments, temp_dirs):
 
 
 def test_build_email_content_one_attachment(one_attachment, temp_dirs):
-    message, filename = one_attachment[0], one_attachment[1]
-    raw_file = filename
+    message, raw_file = one_attachment[0], one_attachment[1]
     date = set_date(message["Date"])
     subject = message["Subject"]
     to = message["To"]
@@ -187,6 +185,19 @@ def test_build_email_content_one_attachment(one_attachment, temp_dirs):
 
     assert result == expected
 
+def test_build_email_content_many_attachments(many_attachments, temp_dirs):
+    message, raw_file = many_attachments[0], many_attachments[1]
+    date = set_date(message["Date"])
+    subject = message["Subject"]
+    to = message["To"]
+    from_ = message["From"]
+    attachments = get_attachments(message, temp_dirs["attachments_dir"])
+    body = clean_body(get_body(message))
+
+    result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
+    expected = "***many_attachments.eml***\nDATE: 2015-06-19\nSUBJECT: Revisions\nTO: Stu Bettler <stu@bmail.com>, Will Jakobson <will@jmail.com>\nFROM: Stu Bettler <stu@bmail.com>\nATTACHMENTS:\n- ADVICE TO NEW TEACHERS.pdf\n- CREDULOUDLY RAPT.pdf\n- HOW TO GRADE IMPERSONALLY.pdf\n- I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf\n- THE DISASTER ODDS.pdf\n- TRESSPASSING AT THE PUMPING STATION.pdf\n\nJust some drafts.\n"
+
+    assert result == expected
 
 def test_clean_email_no_attachments(monkeypatch, no_attachments, temp_dirs):
     attachments_dir = temp_dirs["attachments_dir"]
