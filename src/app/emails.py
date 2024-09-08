@@ -110,7 +110,8 @@ def clean_email(email_file, config):
     to = msg["To"]
     from_ = msg["From"]
     attachments = get_attachments(msg, attachments_dir)
-    body = clean_body(get_body(msg))
+    # body = clean_body(get_body(msg))
+    body = get_body(msg)
 
     email_content = build_email_content(
         raw_file, date, subject, to, from_, attachments, body
@@ -214,13 +215,13 @@ def get_body(msg):
             plain_text = part.get_payload(decode=True).decode(charset, errors="replace")
             break  
 
-    return plain_text or "This email has no text in the body."
+    return plain_text.split("\nOn ")[0] or "This email has no text in the body."
 
-def clean_body(body):
-    """
-    Clean the email body fetched by get_body.
-    """
-    return body.split("\nOn ")[0]
+# def clean_body(body):
+#     """
+#     Clean the email body fetched by get_body.
+#     """
+#     return body.split("\nOn ")[0]
 
 
 def build_email_content(raw_file, date, subject, to, from_, attachments, body):

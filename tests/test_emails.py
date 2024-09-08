@@ -7,7 +7,7 @@ from email.parser import BytesParser
 from app import app
 from emails import (
     build_email_content,
-    clean_body,
+    # clean_body,
     clean_email,
     format_subject,
     get_attachments,
@@ -21,7 +21,7 @@ import ipdb
 @pytest.fixture()
 def no_attachments():
     """
-    Read a raw email file with no attachments.
+    Read and yield a raw email file with no attachments.
     """
     filename = "no_attachments.eml"
     raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
@@ -34,7 +34,7 @@ def no_attachments():
 @pytest.fixture()
 def one_attachment():
     """
-    Read a raw email file with one attachment.
+    Read and yield a raw email file with one attachment.
     """
 
     filename = "one_attachment.eml"
@@ -48,7 +48,7 @@ def one_attachment():
 @pytest.fixture()
 def many_attachments():
     """
-    Read a raw email file with many attachments.
+    Read and yield a raw email file with many attachments.
     """
     filename = "many_attachments.eml"
     raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
@@ -135,8 +135,7 @@ def test_get_attachments_many_attachments(many_attachments, temp_dirs):
 def test_get_body_happy(no_attachments):
     message = no_attachments[0]
     result = get_body(message)
-    expected = "Hey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n\nOn Mon, Jul 1, 2013 at 5:09 AM, Will Jakobson <will@jmail.com>wrote:\n\n> hey that old link is broken, this one's better, check it\n> out quick\n> http://www.youtube.com/watch?v=r-xd4JQEbfE\n>\n"
-
+    expected = "Hey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n"
     assert result == expected
 
 def test_get_body_nested(many_attachments):
@@ -147,13 +146,13 @@ def test_get_body_nested(many_attachments):
     assert result == expected
 
 
-def test_clean_body(no_attachments):
-    message = no_attachments[0]
-    body = get_body(message)
-    result = clean_body(body)
-    expected = "Hey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n"
+# def test_clean_body(no_attachments):
+#     message = no_attachments[0]
+#     body = get_body(message)
+#     result = clean_body(body)
+#     expected = "Hey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n"
 
-    assert result == expected
+#     assert result == expected
 
 
 def test_build_email_content_no_attachments(no_attachments, temp_dirs):
@@ -163,7 +162,7 @@ def test_build_email_content_no_attachments(no_attachments, temp_dirs):
     to = message["To"]
     from_ = message["From"]
     attachments = get_attachments(message, temp_dirs["attachments_dir"])
-    body = clean_body(get_body(message))
+    body = get_body(message)
 
     result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
     expected = "***no_attachments.eml***\nDATE: 2013-07-05\nSUBJECT: Re:\nTO: Will Jakobson <will@jmail.com>\nFROM: Stu Bettler <stu@bmail.com>\n\nHey Will,\n\nJust wanted to confirm our plans for later.\n\nLet me know,\nStu\n\n"
@@ -178,7 +177,7 @@ def test_build_email_content_one_attachment(one_attachment, temp_dirs):
     to = message["To"]
     from_ = message["From"]
     attachments = get_attachments(message, temp_dirs["attachments_dir"])
-    body = clean_body(get_body(message))
+    body = get_body(message)
 
     result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
     expected = "***one_attachment.eml***\nDATE: 2011-07-10\nSUBJECT: beautiful and stunning\nTO: stu bettler <stu@bmail.com>\nFROM: Will Jakobson <will@jmail.com>\nATTACHMENTS:\n- beautifulandstunning.png\n\ni just saw this.  made me chuckle, and reminded me of writing alone.\n"
@@ -192,7 +191,7 @@ def test_build_email_content_many_attachments(many_attachments, temp_dirs):
     to = message["To"]
     from_ = message["From"]
     attachments = get_attachments(message, temp_dirs["attachments_dir"])
-    body = clean_body(get_body(message))
+    body = get_body(message)
 
     result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
     expected = "***many_attachments.eml***\nDATE: 2015-06-19\nSUBJECT: Revisions\nTO: Stu Bettler <stu@bmail.com>, Will Jakobson <will@jmail.com>\nFROM: Stu Bettler <stu@bmail.com>\nATTACHMENTS:\n- ADVICE TO NEW TEACHERS.pdf\n- CREDULOUDLY RAPT.pdf\n- HOW TO GRADE IMPERSONALLY.pdf\n- I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf\n- THE DISASTER ODDS.pdf\n- TRESSPASSING AT THE PUMPING STATION.pdf\n\nJust some drafts.\n"
