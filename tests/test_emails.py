@@ -28,7 +28,8 @@ def no_attachments():
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
-        yield message, filename, raw_email_path
+        message_id = 'test_id_01'
+        yield message, filename, raw_email_path, message_id
 
 
 @pytest.fixture()
@@ -42,7 +43,8 @@ def one_attachment():
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
-        yield message, filename, raw_email_path
+        message_id = 'test_id_10'
+        yield message, filename, raw_email_path, message_id
 
 
 @pytest.fixture()
@@ -55,7 +57,8 @@ def many_attachments():
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
-        yield message, filename, raw_email_path
+        message_id = 'test_id_11'
+        yield message, filename, raw_email_path, message_id
 
 
 def test_set_date_no_attachments(no_attachments):
@@ -205,11 +208,12 @@ def test_clean_email_no_attachments(monkeypatch, no_attachments, temp_dirs):
     monkeypatch.setattr(app.dir_config, "ATTACHMENTS_DIR", attachments_dir)
     monkeypatch.setattr(app.dir_config, "CLEAN_EMAIL_DIR", clean_dir)
     filepath = no_attachments[2]
-    expected_filename = '2013-07-05__re.txt'
+    message_id = no_attachments[3]
+    expected_filename = '2013-07-05__re__test_id_01.txt'
     
     assert not os.listdir(clean_dir) # Make sure the target directory is empty for comparison
     
-    clean_email(filepath, app.dir_config)
+    clean_email(filepath, app.dir_config, message_id)
 
     assert len(os.listdir(clean_dir)) == 1
     assert expected_filename in os.listdir(clean_dir)
@@ -222,13 +226,14 @@ def test_clean_email_one_attachment(monkeypatch, one_attachment, temp_dirs):
     monkeypatch.setattr(app.dir_config, "ATTACHMENTS_DIR", attachments_dir)
     monkeypatch.setattr(app.dir_config, "CLEAN_EMAIL_DIR", clean_dir)
     filepath = one_attachment[2]
-    expected_email_filename = '2011-07-10__beautifulandstunning.txt'
+    message_id = one_attachment[3]
+    expected_email_filename = '2011-07-10__beautifulandstunning__test_id_10.txt'
     expected_attachment_filename = 'beautifulandstunning.png'
     
     assert not os.listdir(clean_dir) # Make sure the target directories are empty for comparison
     assert not os.listdir(attachments_dir)
 
-    clean_email(filepath, app.dir_config)
+    clean_email(filepath, app.dir_config, message_id)
 
     assert len(os.listdir(clean_dir)) == 1
     assert len(os.listdir(attachments_dir)) == 1
@@ -242,7 +247,8 @@ def test_clean_email_many_attachments(monkeypatch, many_attachments, temp_dirs):
     monkeypatch.setattr(app.dir_config, "ATTACHMENTS_DIR", attachments_dir)
     monkeypatch.setattr(app.dir_config, "CLEAN_EMAIL_DIR", clean_dir)
     filepath = many_attachments[2]
-    expected_email_filename = '2015-06-19__revisions.txt'
+    message_id = many_attachments[3]
+    expected_email_filename = '2015-06-19__revisions__test_id_11.txt'
     expected_attachment_filenames = [
         "ADVICE TO NEW TEACHERS.pdf",
         "CREDULOUDLY RAPT.pdf",
@@ -255,7 +261,7 @@ def test_clean_email_many_attachments(monkeypatch, many_attachments, temp_dirs):
     assert not os.listdir(clean_dir) # Make sure the target directories are empty for comparison
     assert not os.listdir(attachments_dir)
 
-    clean_email(filepath, app.dir_config)
+    clean_email(filepath, app.dir_config, message_id)
 
     assert len(os.listdir(clean_dir)) == 1
     assert len(os.listdir(attachments_dir)) == 6
