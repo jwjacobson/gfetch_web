@@ -61,6 +61,20 @@ def many_attachments():
         yield message, filename, raw_email_path, message_id
 
 
+@pytest.fixture()
+def no_subject():
+    """
+    Read and yield a raw email file with no subject.
+    """
+    filename = "no_subject.eml"
+    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+
+    with open(raw_email_path, "rb") as raw_email:
+        message = BytesParser(policy=policy.default).parse(raw_email)
+        message_id = 'test_id_11'
+        yield message, filename, raw_email_path, message_id
+
+
 def test_set_date_no_attachments(no_attachments):
     message = no_attachments[0]
     raw_date = message["Date"]
@@ -87,6 +101,15 @@ def test_format_subject_normal_text_no_caps(one_attachment):
 
     assert result == expected
 
+
+def test_format_subject_no_subject(no_subject):
+    message = no_subject[0]
+    subject = message["Subject"]
+    expected = 'None'
+
+    assert subject == ""
+    result = format_subject(subject)
+    assert result == 'None'
 
 def test_get_attachments_no_attachments(no_attachments, temp_dirs):
     message = no_attachments[0]
