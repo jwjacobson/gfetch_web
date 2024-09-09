@@ -216,7 +216,7 @@ def get_body(msg):
             plain_text = part.get_payload(decode=True).decode(charset, errors="replace")
             break  
 
-    return plain_text.split("\nOn ")[0] or "This email has no text in the body."
+    return plain_text.split("\nOn ")[0] if plain_text else "This email has no text in the body."
 
 # def clean_body(body):
 #     """
