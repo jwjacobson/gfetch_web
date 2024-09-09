@@ -224,6 +224,21 @@ def test_build_email_content_many_attachments(many_attachments, temp_dirs):
 
     assert result == expected
 
+
+def test_build_email_content_no_subject(no_subject, temp_dirs):
+    message, raw_file = no_subject[0], no_subject[1]
+    date = set_date(message["Date"])
+    subject = message["Subject"]
+    to = message["To"]
+    from_ = message["From"]
+    attachments = get_attachments(message, temp_dirs["attachments_dir"])
+    body = get_body(message)
+
+    result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
+    expected = '***no_subject.eml***\nDATE: 2010-01-06\nSUBJECT: \nTO: stu@bmail.com\nFROM: Will Jakobson <will@jmail.com>\n\nGreetings from the tropics!\n'
+
+    assert result == expected
+
 def test_clean_email_no_attachments(monkeypatch, no_attachments, temp_dirs):
     attachments_dir = temp_dirs["attachments_dir"]
     clean_dir = temp_dirs["clean_email_dir"]
