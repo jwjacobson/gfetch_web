@@ -67,6 +67,7 @@ def fetch_emails(email_address, config):
             break
         else:
             for message in messages:
+                message_id = message["id"] 
                 msg = (
                     service.users()
                     .messages()
@@ -78,7 +79,7 @@ def fetch_emails(email_address, config):
                 print(f'\nRetrieving message {raw_email_path.split('/')[-1]}.')
                 with open(raw_email_path, "wb") as f:
                     f.write(msg_str)
-                attachments = clean_email(raw_email_path, config)
+                attachments = clean_email(raw_email_path, config, message_id)
                 if attachments:
                     total_attachments += attachments
 
@@ -92,7 +93,7 @@ def fetch_emails(email_address, config):
     return {"total_messages": total_messages, "total_attachments": total_attachments}
 
 
-def clean_email(email_file, config):
+def clean_email(email_file, config, message_id):
     """
     Take an eml file, clean and save it as a txt file, and save any attachments.
     """
@@ -117,7 +118,7 @@ def clean_email(email_file, config):
         raw_file, date, subject, to, from_, attachments, body
     )
 
-    email_filename = os.path.join(clean_dir, f"{date}__{formatted_subject}.txt")
+    email_filename = os.path.join(clean_dir, f"{date}__{formatted_subject}__{message_id}.txt")
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
 
