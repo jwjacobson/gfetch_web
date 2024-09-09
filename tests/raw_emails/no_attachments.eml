@@ -1,0 +1,60 @@
+Delivered-To: will@jmail.com
+Received: by 10.60.62.40 with SMTP id v8csp125646oer;
+        Fri, 5 Jul 2013 08:10:17 -0700 (PDT)
+Return-Path: <stu@bmail.com>
+Received-SPF: pass (google.com: domain of stu@bmail.com designates 10.58.152.3 as permitted sender) client-ip=10.58.152.3
+Authentication-Results: mr.google.com;
+       spf=pass (google.com: domain of stu@bmail.com designates 10.58.152.3 as permitted sender) smtp.mail=stu@bmail.com;
+       dkim=pass header.i=@gmail.com
+X-Received: from mr.google.com ([10.58.152.3])
+        by 10.58.152.3 with SMTP id uu3mr2663619veb.16.1373037016435 (num_hops = 1);
+        Fri, 05 Jul 2013 08:10:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
+         :content-type;
+        bh=UAuab9+L0eSQdBa6vY0i/k9zMgF3FOr82qjCK5j3oos=;
+        b=DAdUYPghS6cLJsRtlFSiDcWAE0BxYDrTsQkBRQeaJ5ZFcd+QM8eegVyeNpG0OpYrM
+         /yT1CXFufSd5uXXXZdNvZTcZXue2RWnI5OPyRr1zJ5wFSVY0/mpI5KZgHFBQCt3eJIz
+         QELKYIdtH2n1qjY+NNpsUDb5OP89Jrx7TT++yMtbohP7WpGB9OEb37TP8Qz3jywIHY
+         y0G9lgdcBp2Xjzce6sRoaNOtpF+JTnFGGhNcUYF5s0oVr3CjfRNwq+XuZqGxqP7K4uHqd
+         PjNM6Xsmyh7t1jRGHcf7w1a6G9PV9vWOp+SVcu90xARl1ySgfzUgQ2P7ALCmKTD/o3tLiF
+         +wEwJH==
+MIME-Version: 1.0
+X-Received: by 10.58.152.3 with SMTP id uu3mr2663619veb.16.1373037016430; Fri,
+ 05 Jul 2013 08:10:16 -0700 (PDT)
+Received: by 10.220.153.18 with HTTP; Fri, 5 Jul 2013 08:10:16 -0700 (PDT)
+In-Reply-To: <CAGM8aEpf3UNT_RxcTnCVueyWeZfgb_Oo5p0W1EeBPzddsyjJyHA@mail.bmail.com>
+References: <CAGM8aEpfU3NT_RxcTnCVueyWeZfgb_Oo5p0W1EeBPzddsyjJyHA@mail.jmail.com>
+Date: Fri, 5 Jul 2013 11:10:16 -0400
+Message-ID: <CAEUq5b0_FgjYSwrj9ER+0Zt9jYo-Jq0BMgSZXStjkJhn7bQRymA@mail.bmail.com>
+Subject: Re:
+From: Stu Bettler <stu@bmail.com>
+To: Will Jakobson <will@jmail.com>
+Content-Type: multipart/alternative; boundary=047d7b86f532a0bd0804e0c517f8
+
+--047d7b86f532a0bd0804e0c517f8
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hey Will,
+
+Just wanted to confirm our plans for later.
+
+Let me know,
+Stu
+
+
+On Mon, Jul 1, 2013 at 5:09 AM, Will Jakobson <will@jmail.com>wrote:
+
+> hey that old link is broken, this one's better, check it
+> out quick
+> http://www.youtube.com/watch?v=r-xd4JQEbfE
+>
+
+--047d7b86f532a0bd0804e0c517f8
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+blablabla
+
+--047d7b86f532a0bd0804e0c517f8--

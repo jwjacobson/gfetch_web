@@ -166,7 +166,7 @@ client_secret*
 credentials.json
 token.json
 sample_*
-raw_emails/
+src/app/raw_emails/
 cleaned_emails/
 scratch*.py
 node_modules/
