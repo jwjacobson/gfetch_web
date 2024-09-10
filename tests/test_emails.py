@@ -74,8 +74,21 @@ def no_subject():
         message_id = 'test_id_11'
         yield message, filename, raw_email_path, message_id
 
+@pytest.fixture()
+def no_date():
+    """
+    Read and yield a raw email file with no date.
+    """
+    filename = "bad_date.eml"
+    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
 
-def test_set_date_no_attachments(no_attachments):
+    with open(raw_email_path, "rb") as raw_email:
+        message = BytesParser(policy=policy.default).parse(raw_email)
+        message_id = 'test_id_11'
+        yield message, filename, raw_email_path, message_id
+
+
+def test_set_date_normal(no_attachments):
     message = no_attachments[0]
     raw_date = message["Date"]
     result = set_date(raw_date)
@@ -83,6 +96,13 @@ def test_set_date_no_attachments(no_attachments):
 
     assert result == expected
 
+def test_set_date_no_date(no_date):
+    message = no_date[0]
+    raw_date = message["Date"]
+    result = set_date(raw_date)
+    expected = "Unknown"
+
+    assert result == expected
 
 def test_format_subject_re_only(no_attachments):
     message = no_attachments[0]
