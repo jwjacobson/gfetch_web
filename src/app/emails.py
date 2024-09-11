@@ -97,14 +97,14 @@ def clean_email(email_file, config, message_id):
     """
     Take an eml file, clean and save it as a txt file, and save any attachments.
     """
-    print(f"Cleaning email {email_file.split('/')[-1]}.")
+    raw_file = email_file.split("/")[-1]
+    print(f"Cleaning {raw_file}.")
     clean_dir = config.CLEAN_EMAIL_DIR
     attachments_dir = config.ATTACHMENTS_DIR
 
     with open(email_file, "rb") as f:
         msg = BytesParser(policy=policy.default).parse(f)
 
-    raw_file = email_file.split("/")[-1]
     date = set_date(msg["Date"])
     subject = msg["Subject"]
     formatted_subject = format_subject(msg["Subject"])
