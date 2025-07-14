@@ -18,15 +18,15 @@
 
 import os
 
-from dotenv import load_dotenv
-from emails import fetch_emails
+from decouple import config
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_session import Session
 
-load_dotenv()
+from emails import fetch_emails
+
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = config("SECRET_KEY")
 
 
 class DirConfig:
@@ -34,9 +34,9 @@ class DirConfig:
     Store dir configuration in a class to allow easy access by emails.py
     """
 
-    RAW_EMAIL_DIR = os.getenv("RAW_EMAIL_DIR")
-    CLEAN_EMAIL_DIR = os.getenv("CLEAN_EMAIL_DIR")
-    ATTACHMENTS_DIR = os.getenv("ATTACHMENTS_DIR")
+    RAW_EMAIL_DIR = config("RAW_EMAIL_DIR")
+    CLEAN_EMAIL_DIR = config("CLEAN_EMAIL_DIR")
+    ATTACHMENTS_DIR = config("ATTACHMENTS_DIR")
 
 
 app.dir_config = DirConfig()
@@ -52,11 +52,11 @@ def create_dirs(config):
 
 
 # Redis configuration
-app.config["SESSION_TYPE"] = os.getenv("SESSION_TYPE")
-app.config["SESSION_PERMANENT"] = os.getenv("SESSION_PERMANENT")
-# app.config["SESSION_USE_SIGNER"] = os.getenv("SESSION_USE_SIGNER")
-app.config["SESSION_KEY_PREFIX"] = os.getenv("SESSION_KEY_PREFIX")
-app.config["SESSION_REDIS"] = os.getenv("SESSION_REDIS")
+app.config["SESSION_TYPE"] = config("SESSION_TYPE")
+app.config["SESSION_PERMANENT"] = config("SESSION_PERMANENT")
+# app.config["SESSION_USE_SIGNER"] = config("SESSION_USE_SIGNER")
+app.config["SESSION_KEY_PREFIX"] = config("SESSION_KEY_PREFIX")
+app.config["SESSION_REDIS"] = config("SESSION_REDIS")
 
 # Start redis
 Session(app)

@@ -20,11 +20,9 @@ import email
 import os
 from email import policy
 from email.parser import BytesParser
-
-from auth import get_credentials
 from googleapiclient.discovery import build
 
-import ipdb
+from auth import get_credentials
 
 
 def fetch_emails(email_address, config):

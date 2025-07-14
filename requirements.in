@@ -1,12 +1,13 @@
 flask
+Flask-Session
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
 google-api-python-client
-python-dotenv
+python-decouple
+redis
+# dev
 ruff
 ipdb
 pytest
 pytest-cov
-redis
-Flask-Session

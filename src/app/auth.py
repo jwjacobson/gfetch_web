@@ -1,12 +1,13 @@
 import os
 
+from decouple import config
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-SCOPES = os.getenv("SCOPES")
-CREDS = os.getenv("CREDS")
-TOKEN = os.getenv("TOKEN")
+SCOPES = config("SCOPES")
+CREDS = config("CREDS")
+TOKEN = config("TOKEN")
 
 
 def get_credentials():
