@@ -37,6 +37,7 @@ def fetch_emails(email_address, config):
 
     try:
         service = build("gmail", "v1", credentials=creds)
+
     except Exception as e:
         print(f"Error building Gmail service: {e}")
         return {"error": f"Error building Gmail service: {e}"}
@@ -90,7 +91,6 @@ def fetch_emails(email_address, config):
     print(f"Retrieved {total_messages} messages and {total_attachments} attachments.")
     return {"total_messages": total_messages, "total_attachments": total_attachments}
 
-
 def clean_email(email_file, config, message_id):
     """
     Take an eml file, clean and save it as a txt file, and save any attachments.
@@ -108,8 +108,7 @@ def clean_email(email_file, config, message_id):
     formatted_subject = format_subject(msg["Subject"])
     to = msg["To"]
     from_ = msg["From"]
-    attachments = get_attachments(msg, attachments_dir)
-    # body = clean_body(get_body(msg))
+    attachments = get_attachments(msg, attachments_dir, date, message_id)  # ← Pass date and message_id
     body = get_body(msg)
 
     email_content = build_email_content(
@@ -174,7 +173,7 @@ def format_subject(subject_str):
     return "".join(subj_list)
 
 
-def get_attachments(msg, attachments_dir):
+def get_attachments(msg, attachments_dir, date, message_id):
     """
     Download any attachments to the email and return a list of them.
     """
@@ -188,8 +187,12 @@ def get_attachments(msg, attachments_dir):
             continue
         filename = part.get_filename()
         print(f"Found attachment: {filename}")
-        attachments.append(filename)
-        filepath = os.path.join(attachments_dir, filename)
+        
+        # Create filename with date and message_id prefix
+        prefixed_filename = f"{date}__{message_id}__{filename}"
+        attachments.append(prefixed_filename)  # Store the prefixed name
+        
+        filepath = os.path.join(attachments_dir, prefixed_filename)
         with open(filepath, "wb") as attachment_file:
             attachment_file.write(part.get_payload(decode=True))
 
