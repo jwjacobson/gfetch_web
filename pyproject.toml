@@ -7,7 +7,9 @@ dependencies = [
     "google-auth-oauthlib",
     "google-auth-httplib2",
     "google-api-python-client",
-    "python-decouple"
+    "python-decouple",
+    "redis>=6.2.0",
+    "flask-session>=0.8.0",
 ]
 requires-python = ">=3.12"
 authors = [
@@ -40,3 +42,10 @@ Issues = "https://github.com/jwjacobson/gfetch_web/issues"
 
 [tool.ruff.lint]
 extend-select = ["I"]
+
+[dependency-groups]
+dev = [
+    "ipdb>=0.13.13",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+]

@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from app import app
 
@@ -34,9 +34,9 @@ def test_delete_files_all_dirs(test_client, monkeypatch, temp_files_all):
 
     assert response.status_code == 302
 
-    assert not os.listdir(attachments_dir)
-    assert not os.listdir(clean_email_dir)
-    assert not os.listdir(raw_email_dir)
+    assert not list(Path(attachments_dir).iterdir())
+    assert not list(Path(clean_email_dir).iterdir())
+    assert not list(Path(raw_email_dir).iterdir())
 
     with test_client.session_transaction() as session:
         messages = [
@@ -61,8 +61,8 @@ def test_delete_files_no_attachments(
 
     assert response.status_code == 302
 
-    assert not os.listdir(clean_email_dir)
-    assert not os.listdir(raw_email_dir)
+    assert not list(Path(clean_email_dir).iterdir())
+    assert not list(Path(raw_email_dir).iterdir())
 
     with test_client.session_transaction() as session:
         messages = [
@@ -86,8 +86,8 @@ def test_delete_files_no_clean(test_client, monkeypatch, temp_files_no_clean):
 
     assert response.status_code == 302
 
-    assert not os.listdir(attachments_dir)
-    assert not os.listdir(raw_email_dir)
+    assert not list(Path(attachments_dir).iterdir())
+    assert not list(Path(raw_email_dir).iterdir())
 
     with test_client.session_transaction() as session:
         messages = [
@@ -111,8 +111,8 @@ def test_delete_files_no_raw(test_client, monkeypatch, temp_files_no_raw):
 
     assert response.status_code == 302
 
-    assert not os.listdir(attachments_dir)
-    assert not os.listdir(clean_email_dir)
+    assert not list(Path(attachments_dir).iterdir())
+    assert not list(Path(clean_email_dir).iterdir())
 
     with test_client.session_transaction() as session:
         messages = [
@@ -138,7 +138,7 @@ def test_delete_files_only_attachments(
 
     assert response.status_code == 302
 
-    assert not os.listdir(attachments_dir)
+    assert not list(Path(attachments_dir).iterdir())
 
     with test_client.session_transaction() as session:
         messages = [
@@ -163,7 +163,7 @@ def test_delete_files_only_clean(test_client, monkeypatch, temp_files_only_clean
 
     assert response.status_code == 302
 
-    assert not os.listdir(clean_email_dir)
+    assert not list(Path(clean_email_dir).iterdir())
 
     with test_client.session_transaction() as session:
         messages = [
@@ -188,7 +188,7 @@ def test_delete_files_only_raw(test_client, monkeypatch, temp_files_only_raw):
 
     assert response.status_code == 302
 
-    assert not os.listdir(raw_email_dir)
+    assert not list(Path(raw_email_dir).iterdir())
 
     with test_client.session_transaction() as session:
         messages = [

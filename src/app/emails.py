@@ -17,21 +17,85 @@
 
 import base64
 import email
-import os
+from pathlib import Path
 from email import policy
 from email.parser import BytesParser
-
-from auth import get_credentials
 from googleapiclient.discovery import build
 
-import ipdb
+from auth import get_credentials
 
+
+# def fetch_emails(email_address, config):
+#     """
+#     Fetch all emails from a given email address.
+#     """
+#     raw_dir = Path(config.RAW_EMAIL_DIR)
+#     creds = get_credentials()
+
+#     if not creds:
+#         return {"error": "Failed to obtain credentials."}
+
+#     try:
+#         service = build("gmail", "v1", credentials=creds)
+
+#     except Exception as e:
+#         print(f"Error building Gmail service: {e}")
+#         return {"error": f"Error building Gmail service: {e}"}
+
+#     query = f"to:{email_address} OR from:{email_address}"
+#     next_page_token = None
+#     total_messages = 0
+#     total_attachments = 0
+
+#     while True:
+#         if next_page_token:
+#             results = (
+#                 service.users()
+#                 .messages()
+#                 .list(userId="me", q=query, pageToken=next_page_token)
+#                 .execute()
+#             )
+#         else:
+#             results = service.users().messages().list(userId="me", q=query).execute()
+
+#         messages = results.get("messages", [])
+#         next_page_token = results.get("nextPageToken", None)
+
+#         if not messages:
+#             print("No messages remain.")
+#             break
+#         else:
+#             for message in messages:
+#                 message_id = message["id"] 
+#                 msg = (
+#                     service.users()
+#                     .messages()
+#                     .get(userId="me", id=message["id"], format="raw")
+#                     .execute()
+#                 )
+#                 msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
+#                 raw_email_path = os.path.join(raw_dir, f'email_{message["id"]}.eml')
+#                 print(f'\nRetrieving message {raw_email_path.split('/')[-1]}.')
+#                 with open(raw_email_path, "wb") as f:
+#                     f.write(msg_str)
+#                 attachments = clean_email(raw_email_path, config, message_id)
+#                 if attachments:
+#                     total_attachments += attachments
+
+#             total_messages += len(messages)
+
+#         if not next_page_token:
+#             break
+
+#     print("\nDone.")
+#     print(f"Retrieved {total_messages} messages and {total_attachments} attachments.")
+#     return {"total_messages": total_messages, "total_attachments": total_attachments}
 
 def fetch_emails(email_address, config):
     """
     Fetch all emails from a given email address.
     """
-    raw_dir = config.RAW_EMAIL_DIR
+    raw_dir = Path(config.RAW_EMAIL_DIR)
     creds = get_credentials()
 
     if not creds:
@@ -39,6 +103,7 @@ def fetch_emails(email_address, config):
 
     try:
         service = build("gmail", "v1", credentials=creds)
+
     except Exception as e:
         print(f"Error building Gmail service: {e}")
         return {"error": f"Error building Gmail service: {e}"}
@@ -75,8 +140,8 @@ def fetch_emails(email_address, config):
                     .execute()
                 )
                 msg_str = base64.urlsafe_b64decode(msg["raw"].encode("ASCII"))
-                raw_email_path = os.path.join(raw_dir, f'email_{message["id"]}.eml')
-                print(f'\nRetrieving message {raw_email_path.split('/')[-1]}.')
+                raw_email_path = raw_dir / f'email_{message["id"]}.eml'
+                print(f'\nRetrieving message {raw_email_path.name}.')
                 with open(raw_email_path, "wb") as f:
                     f.write(msg_str)
                 attachments = clean_email(raw_email_path, config, message_id)
@@ -92,39 +157,69 @@ def fetch_emails(email_address, config):
     print(f"Retrieved {total_messages} messages and {total_attachments} attachments.")
     return {"total_messages": total_messages, "total_attachments": total_attachments}
 
+# def clean_email(email_file, config, message_id):
+#     """
+#     Take an eml file, clean and save it as a txt file, and save any attachments.
+#     """
+#     raw_file = email_file.split("/")[-1]
+#     print(f"Cleaning {raw_file}.")
+#     clean_dir = config.CLEAN_EMAIL_DIR
+#     attachments_dir = config.ATTACHMENTS_DIR
+
+#     with open(email_file, "rb") as f:
+#         msg = BytesParser(policy=policy.default).parse(f)
+
+#     date = set_date(msg["Date"])
+#     subject = msg["Subject"]
+#     formatted_subject = format_subject(msg["Subject"])
+#     to = msg["To"]
+#     from_ = msg["From"]
+#     attachments = get_attachments(msg, attachments_dir, date, message_id)  # ← Pass date and message_id
+#     body = get_body(msg)
+
+#     email_content = build_email_content(
+#         raw_file, date, subject, to, from_, attachments, body
+#     )
+
+#     email_filename = os.path.join(clean_dir, f"{date}__{formatted_subject}__{message_id}.txt")
+#     with open(email_filename, "w", encoding="utf-8") as f:
+#         f.write(email_content)
+
+#     if attachments:
+#         return len(attachments)
+
 
 def clean_email(email_file, config, message_id):
     """
     Take an eml file, clean and save it as a txt file, and save any attachments.
     """
-    print(f"Cleaning email {email_file.split('/')[-1]}.")
-    clean_dir = config.CLEAN_EMAIL_DIR
-    attachments_dir = config.ATTACHMENTS_DIR
+    email_path = Path(email_file)
+    raw_file = email_path.name
+    print(f"Cleaning {raw_file}.")
+    clean_dir = Path(config.CLEAN_EMAIL_DIR)
+    attachments_dir = Path(config.ATTACHMENTS_DIR)
 
-    with open(email_file, "rb") as f:
+    with open(email_path, "rb") as f:
         msg = BytesParser(policy=policy.default).parse(f)
 
-    raw_file = email_file.split("/")[-1]
     date = set_date(msg["Date"])
     subject = msg["Subject"]
     formatted_subject = format_subject(msg["Subject"])
     to = msg["To"]
     from_ = msg["From"]
-    attachments = get_attachments(msg, attachments_dir)
-    # body = clean_body(get_body(msg))
+    attachments = get_attachments(msg, attachments_dir, date, message_id)
     body = get_body(msg)
 
     email_content = build_email_content(
         raw_file, date, subject, to, from_, attachments, body
     )
 
-    email_filename = os.path.join(clean_dir, f"{date}__{formatted_subject}__{message_id}.txt")
+    email_filename = clean_dir / f"{date}__{formatted_subject}__{message_id}.txt"
     with open(email_filename, "w", encoding="utf-8") as f:
         f.write(email_content)
 
     if attachments:
         return len(attachments)
-
 
 def set_date(date_str):
     """
@@ -176,11 +271,37 @@ def format_subject(subject_str):
     return "".join(subj_list)
 
 
-def get_attachments(msg, attachments_dir):
+# def get_attachments(msg, attachments_dir, date, message_id):
+#     """
+#     Download any attachments to the email and return a list of them.
+#     """
+#     attachments = []
+
+#     if not msg.is_multipart():
+#         return attachments
+
+#     for part in msg.iter_parts():
+#         if part.get_content_disposition() != "attachment" or not part.get_filename:
+#             continue
+#         filename = part.get_filename()
+#         print(f"Found attachment: {filename}")
+        
+#         # Create filename with date and message_id prefix
+#         prefixed_filename = f"{date}__{message_id}__{filename}"
+#         attachments.append(prefixed_filename)  # Store the prefixed name
+        
+#         filepath = os.path.join(attachments_dir, prefixed_filename)
+#         with open(filepath, "wb") as attachment_file:
+#             attachment_file.write(part.get_payload(decode=True))
+
+#     return attachments
+
+def get_attachments(msg, attachments_dir, date, message_id):
     """
     Download any attachments to the email and return a list of them.
     """
     attachments = []
+    attachments_path = Path(attachments_dir)
 
     if not msg.is_multipart():
         return attachments
@@ -190,13 +311,15 @@ def get_attachments(msg, attachments_dir):
             continue
         filename = part.get_filename()
         print(f"Found attachment: {filename}")
-        attachments.append(filename)
-        filepath = os.path.join(attachments_dir, filename)
+        
+        prefixed_filename = f"{date}__{message_id}__{filename}"
+        attachments.append(prefixed_filename)  
+
+        filepath = attachments_path / prefixed_filename
         with open(filepath, "wb") as attachment_file:
             attachment_file.write(part.get_payload(decode=True))
 
     return attachments
-
 
 def get_body(msg):
     """
@@ -216,7 +339,7 @@ def get_body(msg):
             plain_text = part.get_payload(decode=True).decode(charset, errors="replace")
             break  
 
-    return plain_text.split("\nOn ")[0] or "This email has no text in the body."
+    return plain_text.split("\nOn ")[0] if plain_text else "This email has no text in the body."
 
 # def clean_body(body):
 #     """

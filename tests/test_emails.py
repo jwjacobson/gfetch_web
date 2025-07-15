@@ -1,5 +1,5 @@
-import os
 import pytest
+from pathlib import Path
 
 from email import policy
 from email.parser import BytesParser
@@ -24,7 +24,7 @@ def no_attachments():
     Read and yield a raw email file with no attachments.
     """
     filename = "no_attachments.eml"
-    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
@@ -39,7 +39,7 @@ def one_attachment():
     """
 
     filename = "one_attachment.eml"
-    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
@@ -53,7 +53,7 @@ def many_attachments():
     Read and yield a raw email file with many attachments.
     """
     filename = "many_attachments.eml"
-    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
@@ -61,7 +61,34 @@ def many_attachments():
         yield message, filename, raw_email_path, message_id
 
 
-def test_set_date_no_attachments(no_attachments):
+@pytest.fixture()
+def no_subject():
+    """
+    Read and yield a raw email file with no subject.
+    """
+    filename = "no_subject.eml"
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
+
+    with open(raw_email_path, "rb") as raw_email:
+        message = BytesParser(policy=policy.default).parse(raw_email)
+        message_id = 'test_id_11'
+        yield message, filename, raw_email_path, message_id
+
+@pytest.fixture()
+def no_date():
+    """
+    Read and yield a raw email file with no date.
+    """
+    filename = "bad_date.eml"
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
+
+    with open(raw_email_path, "rb") as raw_email:
+        message = BytesParser(policy=policy.default).parse(raw_email)
+        message_id = 'test_id_11'
+        yield message, filename, raw_email_path, message_id
+
+
+def test_set_date_normal(no_attachments):
     message = no_attachments[0]
     raw_date = message["Date"]
     result = set_date(raw_date)
@@ -69,6 +96,13 @@ def test_set_date_no_attachments(no_attachments):
 
     assert result == expected
 
+def test_set_date_no_date(no_date):
+    message = no_date[0]
+    raw_date = message["Date"]
+    result = set_date(raw_date)
+    expected = "Unknown"
+
+    assert result == expected
 
 def test_format_subject_re_only(no_attachments):
     message = no_attachments[0]
@@ -88,52 +122,78 @@ def test_format_subject_normal_text_no_caps(one_attachment):
     assert result == expected
 
 
+def test_format_subject_no_subject(no_subject):
+    message = no_subject[0]
+    subject = message["Subject"]
+    expected = 'None'
+
+    assert subject == ""
+    result = format_subject(subject)
+    assert result == 'None'
+
+
 def test_get_attachments_no_attachments(no_attachments, temp_dirs):
     message = no_attachments[0]
+    message_id = no_attachments[3]
     attachments_dir = temp_dirs["attachments_dir"]
-    result = get_attachments(message, attachments_dir)
+    date = set_date(message["Date"])  # Get the date from the message
+    
+    result = get_attachments(message, attachments_dir, date, message_id)
     expected = []
 
     assert result == expected
-    assert not os.listdir(attachments_dir)
+    assert not list(Path(attachments_dir).iterdir())
 
 
 def test_get_attachments_one_attachment(one_attachment, temp_dirs):
     message = one_attachment[0]
+    message_id = one_attachment[3]
     attachments_dir = temp_dirs["attachments_dir"]
-    result = get_attachments(message, attachments_dir)
-    expected = ["beautifulandstunning.png"]
+    date = set_date(message["Date"])  # Get the date from the message
+    
+    result = get_attachments(message, attachments_dir, date, message_id)
+    expected = [f"{date}__{message_id}__beautifulandstunning.png"]
 
     assert result == expected
     assert len(result) == 1
-    assert len(os.listdir(attachments_dir)) == 1
+    
+    attachments_path = Path(attachments_dir)
+    dir_files = [f.name for f in attachments_path.iterdir()]
+    assert len(dir_files) == 1
+    
     for file in result:
-        assert file in os.listdir(attachments_dir)
-    for file in os.listdir(attachments_dir):
+        assert file in dir_files
+    for file in dir_files:
         assert file in expected
 
 
 def test_get_attachments_many_attachments(many_attachments, temp_dirs):
     message = many_attachments[0]
+    message_id = many_attachments[3]
     attachments_dir = temp_dirs["attachments_dir"]
-    result = get_attachments(message, attachments_dir)
+    date = set_date(message["Date"])  # Get the date from the message
+    
+    result = get_attachments(message, attachments_dir, date, message_id)
     expected = [
-        "ADVICE TO NEW TEACHERS.pdf",
-        "CREDULOUDLY RAPT.pdf",
-        "HOW TO GRADE IMPERSONALLY.pdf",
-        "I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf",
-        "THE DISASTER ODDS.pdf",
-        "TRESSPASSING AT THE PUMPING STATION.pdf",
+        f"{date}__{message_id}__ADVICE TO NEW TEACHERS.pdf",
+        f"{date}__{message_id}__CREDULOUDLY RAPT.pdf",
+        f"{date}__{message_id}__HOW TO GRADE IMPERSONALLY.pdf",
+        f"{date}__{message_id}__I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf",
+        f"{date}__{message_id}__THE DISASTER ODDS.pdf",
+        f"{date}__{message_id}__TRESSPASSING AT THE PUMPING STATION.pdf",
     ]
 
     assert result == expected
     assert len(result) == 6
-    assert len(os.listdir(attachments_dir)) == 6
+    
+    attachments_path = Path(attachments_dir)
+    dir_files = [f.name for f in attachments_path.iterdir()]
+    assert len(dir_files) == 6
+    
     for file in result:
-        assert file in os.listdir(attachments_dir)
-    for file in os.listdir(attachments_dir):
+        assert file in dir_files
+    for file in dir_files:
         assert file in expected
-
 
 def test_get_body_happy(no_attachments):
     message = no_attachments[0]
@@ -160,11 +220,12 @@ def test_get_body_nested(many_attachments):
 
 def test_build_email_content_no_attachments(no_attachments, temp_dirs):
     message, raw_file = no_attachments[0], no_attachments[1]
+    message_id = no_attachments[3]
     date = set_date(message["Date"])
     subject = message["Subject"]
     to = message["To"]
     from_ = message["From"]
-    attachments = get_attachments(message, temp_dirs["attachments_dir"])
+    attachments = get_attachments(message, temp_dirs["attachments_dir"], date, message_id)
     body = get_body(message)
 
     result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
@@ -175,31 +236,51 @@ def test_build_email_content_no_attachments(no_attachments, temp_dirs):
 
 def test_build_email_content_one_attachment(one_attachment, temp_dirs):
     message, raw_file = one_attachment[0], one_attachment[1]
+    message_id = one_attachment[3]
     date = set_date(message["Date"])
     subject = message["Subject"]
     to = message["To"]
     from_ = message["From"]
-    attachments = get_attachments(message, temp_dirs["attachments_dir"])
+    attachments = get_attachments(message, temp_dirs["attachments_dir"], date, message_id)
     body = get_body(message)
 
     result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
-    expected = "***one_attachment.eml***\nDATE: 2011-07-10\nSUBJECT: beautiful and stunning\nTO: stu bettler <stu@bmail.com>\nFROM: Will Jakobson <will@jmail.com>\nATTACHMENTS:\n- beautifulandstunning.png\n\ni just saw this.  made me chuckle, and reminded me of writing alone.\n"
+    expected = f"***one_attachment.eml***\nDATE: 2011-07-10\nSUBJECT: beautiful and stunning\nTO: stu bettler <stu@bmail.com>\nFROM: Will Jakobson <will@jmail.com>\nATTACHMENTS:\n- {date}__{message_id}__beautifulandstunning.png\n\ni just saw this.  made me chuckle, and reminded me of writing alone.\n"
 
     assert result == expected
+
 
 def test_build_email_content_many_attachments(many_attachments, temp_dirs):
     message, raw_file = many_attachments[0], many_attachments[1]
+    message_id = many_attachments[3]
     date = set_date(message["Date"])
     subject = message["Subject"]
     to = message["To"]
     from_ = message["From"]
-    attachments = get_attachments(message, temp_dirs["attachments_dir"])
+    attachments = get_attachments(message, temp_dirs["attachments_dir"], date, message_id)
     body = get_body(message)
 
     result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
-    expected = "***many_attachments.eml***\nDATE: 2015-06-19\nSUBJECT: Revisions\nTO: Stu Bettler <stu@bmail.com>, Will Jakobson <will@jmail.com>\nFROM: Stu Bettler <stu@bmail.com>\nATTACHMENTS:\n- ADVICE TO NEW TEACHERS.pdf\n- CREDULOUDLY RAPT.pdf\n- HOW TO GRADE IMPERSONALLY.pdf\n- I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf\n- THE DISASTER ODDS.pdf\n- TRESSPASSING AT THE PUMPING STATION.pdf\n\nJust some drafts.\n"
+    expected = f"***many_attachments.eml***\nDATE: 2015-06-19\nSUBJECT: Revisions\nTO: Stu Bettler <stu@bmail.com>, Will Jakobson <will@jmail.com>\nFROM: Stu Bettler <stu@bmail.com>\nATTACHMENTS:\n- {date}__{message_id}__ADVICE TO NEW TEACHERS.pdf\n- {date}__{message_id}__CREDULOUDLY RAPT.pdf\n- {date}__{message_id}__HOW TO GRADE IMPERSONALLY.pdf\n- {date}__{message_id}__I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf\n- {date}__{message_id}__THE DISASTER ODDS.pdf\n- {date}__{message_id}__TRESSPASSING AT THE PUMPING STATION.pdf\n\nJust some drafts.\n"
 
     assert result == expected
+
+
+def test_build_email_content_no_subject(no_subject, temp_dirs):
+    message, raw_file = no_subject[0], no_subject[1]
+    message_id = no_subject[3]
+    date = set_date(message["Date"])
+    subject = message["Subject"]
+    to = message["To"]
+    from_ = message["From"]
+    attachments = get_attachments(message, temp_dirs["attachments_dir"], date, message_id)
+    body = get_body(message)
+
+    result = build_email_content(raw_file, date, subject, to, from_, attachments, body)
+    expected = '***no_subject.eml***\nDATE: 2010-01-06\nSUBJECT: \nTO: stu@bmail.com\nFROM: Will Jakobson <will@jmail.com>\n\nGreetings from the tropics!\n'
+
+    assert result == expected
+
 
 def test_clean_email_no_attachments(monkeypatch, no_attachments, temp_dirs):
     attachments_dir = temp_dirs["attachments_dir"]
@@ -211,13 +292,16 @@ def test_clean_email_no_attachments(monkeypatch, no_attachments, temp_dirs):
     message_id = no_attachments[3]
     expected_filename = '2013-07-05__re__test_id_01.txt'
     
-    assert not os.listdir(clean_dir) # Make sure the target directory is empty for comparison
+    clean_path = Path(clean_dir)
+    assert not list(clean_path.iterdir())  # Make sure the target directory is empty for comparison
     
     clean_email(filepath, app.dir_config, message_id)
 
-    assert len(os.listdir(clean_dir)) == 1
-    assert expected_filename in os.listdir(clean_dir)
-    assert not os.listdir(attachments_dir)
+    dir_files = [f.name for f in clean_path.iterdir()]
+    assert len(dir_files) == 1
+    assert expected_filename in dir_files
+    assert not list(Path(attachments_dir).iterdir())
+
 
 def test_clean_email_one_attachment(monkeypatch, one_attachment, temp_dirs):
     attachments_dir = temp_dirs["attachments_dir"]
@@ -228,17 +312,24 @@ def test_clean_email_one_attachment(monkeypatch, one_attachment, temp_dirs):
     filepath = one_attachment[2]
     message_id = one_attachment[3]
     expected_email_filename = '2011-07-10__beautifulandstunning__test_id_10.txt'
-    expected_attachment_filename = 'beautifulandstunning.png'
+    expected_attachment_filename = '2011-07-10__test_id_10__beautifulandstunning.png'
     
-    assert not os.listdir(clean_dir) # Make sure the target directories are empty for comparison
-    assert not os.listdir(attachments_dir)
+    clean_path = Path(clean_dir)
+    attachments_path = Path(attachments_dir)
+    
+    assert not list(clean_path.iterdir())  # Make sure the target directories are empty for comparison
+    assert not list(attachments_path.iterdir())
 
     clean_email(filepath, app.dir_config, message_id)
 
-    assert len(os.listdir(clean_dir)) == 1
-    assert len(os.listdir(attachments_dir)) == 1
-    assert expected_email_filename in os.listdir(clean_dir)
-    assert expected_attachment_filename in os.listdir(attachments_dir)
+    clean_files = [f.name for f in clean_path.iterdir()]
+    attachment_files = [f.name for f in attachments_path.iterdir()]
+    
+    assert len(clean_files) == 1
+    assert len(attachment_files) == 1
+    assert expected_email_filename in clean_files
+    assert expected_attachment_filename in attachment_files
+
 
 def test_clean_email_many_attachments(monkeypatch, many_attachments, temp_dirs):
     attachments_dir = temp_dirs["attachments_dir"]
@@ -250,21 +341,27 @@ def test_clean_email_many_attachments(monkeypatch, many_attachments, temp_dirs):
     message_id = many_attachments[3]
     expected_email_filename = '2015-06-19__revisions__test_id_11.txt'
     expected_attachment_filenames = [
-        "ADVICE TO NEW TEACHERS.pdf",
-        "CREDULOUDLY RAPT.pdf",
-        "HOW TO GRADE IMPERSONALLY.pdf",
-        "I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf",
-        "THE DISASTER ODDS.pdf",
-        "TRESSPASSING AT THE PUMPING STATION.pdf",
+        "2015-06-19__test_id_11__ADVICE TO NEW TEACHERS.pdf",
+        "2015-06-19__test_id_11__CREDULOUDLY RAPT.pdf",
+        "2015-06-19__test_id_11__HOW TO GRADE IMPERSONALLY.pdf",
+        "2015-06-19__test_id_11__I'D RATHER SPEND NEW YEAR'S IN A BARN.pdf",
+        "2015-06-19__test_id_11__THE DISASTER ODDS.pdf",
+        "2015-06-19__test_id_11__TRESSPASSING AT THE PUMPING STATION.pdf",
     ]
 
-    assert not os.listdir(clean_dir) # Make sure the target directories are empty for comparison
-    assert not os.listdir(attachments_dir)
+    clean_path = Path(clean_dir)
+    attachments_path = Path(attachments_dir)
+    
+    assert not list(clean_path.iterdir())  # Make sure the target directories are empty for comparison
+    assert not list(attachments_path.iterdir())
 
     clean_email(filepath, app.dir_config, message_id)
 
-    assert len(os.listdir(clean_dir)) == 1
-    assert len(os.listdir(attachments_dir)) == 6
-    assert expected_email_filename in os.listdir(clean_dir)
+    clean_files = [f.name for f in clean_path.iterdir()]
+    attachment_files = [f.name for f in attachments_path.iterdir()]
+    
+    assert len(clean_files) == 1
+    assert len(attachment_files) == 6
+    assert expected_email_filename in clean_files
     for filename in expected_attachment_filenames:
-        assert filename in os.listdir(attachments_dir)
+        assert filename in attachment_files

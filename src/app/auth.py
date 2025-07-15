@@ -1,17 +1,18 @@
-import os
+from pathlib import Path
 
+from decouple import config
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-SCOPES = os.getenv("SCOPES")
-CREDS = os.getenv("CREDS")
-TOKEN = os.getenv("TOKEN")
+SCOPES = config("SCOPES")
+CREDS = Path(config("CREDS"))
+TOKEN = Path(config("TOKEN"))
 
 
 def get_credentials():
     creds = None
-    if os.path.exists(TOKEN):
+    if TOKEN.exists():
         try:
             creds = Credentials.from_authorized_user_file(TOKEN, SCOPES)
         except Exception as e:
@@ -23,8 +24,8 @@ def get_credentials():
                 creds.refresh(Request())
             except Exception as e:
                 print(f"Error refreshing credentials: {e}")
-                if os.path.exists(TOKEN):
-                    os.remove(TOKEN)
+                if TOKEN.exists():
+                    TOKEN.unlink()
                 creds = None
 
         if not creds:
