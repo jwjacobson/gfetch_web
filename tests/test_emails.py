@@ -1,5 +1,5 @@
-import os
 import pytest
+from pathlib import Path
 
 from email import policy
 from email.parser import BytesParser
@@ -24,7 +24,7 @@ def no_attachments():
     Read and yield a raw email file with no attachments.
     """
     filename = "no_attachments.eml"
-    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
@@ -39,7 +39,7 @@ def one_attachment():
     """
 
     filename = "one_attachment.eml"
-    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
@@ -53,7 +53,7 @@ def many_attachments():
     Read and yield a raw email file with many attachments.
     """
     filename = "many_attachments.eml"
-    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
@@ -67,7 +67,7 @@ def no_subject():
     Read and yield a raw email file with no subject.
     """
     filename = "no_subject.eml"
-    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
@@ -80,7 +80,7 @@ def no_date():
     Read and yield a raw email file with no date.
     """
     filename = "bad_date.eml"
-    raw_email_path = os.path.join(os.path.dirname(__file__), "raw_emails", filename)
+    raw_email_path = Path(__file__).parent / "raw_emails" / filename
 
     with open(raw_email_path, "rb") as raw_email:
         message = BytesParser(policy=policy.default).parse(raw_email)
@@ -142,7 +142,7 @@ def test_get_attachments_no_attachments(no_attachments, temp_dirs):
     expected = []
 
     assert result == expected
-    assert not os.listdir(attachments_dir)
+    assert not list(Path(attachments_dir).iterdir())
 
 
 def test_get_attachments_one_attachment(one_attachment, temp_dirs):
@@ -156,10 +156,14 @@ def test_get_attachments_one_attachment(one_attachment, temp_dirs):
 
     assert result == expected
     assert len(result) == 1
-    assert len(os.listdir(attachments_dir)) == 1
+    
+    attachments_path = Path(attachments_dir)
+    dir_files = [f.name for f in attachments_path.iterdir()]
+    assert len(dir_files) == 1
+    
     for file in result:
-        assert file in os.listdir(attachments_dir)
-    for file in os.listdir(attachments_dir):
+        assert file in dir_files
+    for file in dir_files:
         assert file in expected
 
 
@@ -181,10 +185,14 @@ def test_get_attachments_many_attachments(many_attachments, temp_dirs):
 
     assert result == expected
     assert len(result) == 6
-    assert len(os.listdir(attachments_dir)) == 6
+    
+    attachments_path = Path(attachments_dir)
+    dir_files = [f.name for f in attachments_path.iterdir()]
+    assert len(dir_files) == 6
+    
     for file in result:
-        assert file in os.listdir(attachments_dir)
-    for file in os.listdir(attachments_dir):
+        assert file in dir_files
+    for file in dir_files:
         assert file in expected
 
 def test_get_body_happy(no_attachments):
@@ -284,13 +292,15 @@ def test_clean_email_no_attachments(monkeypatch, no_attachments, temp_dirs):
     message_id = no_attachments[3]
     expected_filename = '2013-07-05__re__test_id_01.txt'
     
-    assert not os.listdir(clean_dir) # Make sure the target directory is empty for comparison
+    clean_path = Path(clean_dir)
+    assert not list(clean_path.iterdir())  # Make sure the target directory is empty for comparison
     
     clean_email(filepath, app.dir_config, message_id)
 
-    assert len(os.listdir(clean_dir)) == 1
-    assert expected_filename in os.listdir(clean_dir)
-    assert not os.listdir(attachments_dir)
+    dir_files = [f.name for f in clean_path.iterdir()]
+    assert len(dir_files) == 1
+    assert expected_filename in dir_files
+    assert not list(Path(attachments_dir).iterdir())
 
 
 def test_clean_email_one_attachment(monkeypatch, one_attachment, temp_dirs):
@@ -304,15 +314,21 @@ def test_clean_email_one_attachment(monkeypatch, one_attachment, temp_dirs):
     expected_email_filename = '2011-07-10__beautifulandstunning__test_id_10.txt'
     expected_attachment_filename = '2011-07-10__test_id_10__beautifulandstunning.png'
     
-    assert not os.listdir(clean_dir) # Make sure the target directories are empty for comparison
-    assert not os.listdir(attachments_dir)
+    clean_path = Path(clean_dir)
+    attachments_path = Path(attachments_dir)
+    
+    assert not list(clean_path.iterdir())  # Make sure the target directories are empty for comparison
+    assert not list(attachments_path.iterdir())
 
     clean_email(filepath, app.dir_config, message_id)
 
-    assert len(os.listdir(clean_dir)) == 1
-    assert len(os.listdir(attachments_dir)) == 1
-    assert expected_email_filename in os.listdir(clean_dir)
-    assert expected_attachment_filename in os.listdir(attachments_dir)
+    clean_files = [f.name for f in clean_path.iterdir()]
+    attachment_files = [f.name for f in attachments_path.iterdir()]
+    
+    assert len(clean_files) == 1
+    assert len(attachment_files) == 1
+    assert expected_email_filename in clean_files
+    assert expected_attachment_filename in attachment_files
 
 
 def test_clean_email_many_attachments(monkeypatch, many_attachments, temp_dirs):
@@ -333,13 +349,19 @@ def test_clean_email_many_attachments(monkeypatch, many_attachments, temp_dirs):
         "2015-06-19__test_id_11__TRESSPASSING AT THE PUMPING STATION.pdf",
     ]
 
-    assert not os.listdir(clean_dir) # Make sure the target directories are empty for comparison
-    assert not os.listdir(attachments_dir)
+    clean_path = Path(clean_dir)
+    attachments_path = Path(attachments_dir)
+    
+    assert not list(clean_path.iterdir())  # Make sure the target directories are empty for comparison
+    assert not list(attachments_path.iterdir())
 
     clean_email(filepath, app.dir_config, message_id)
 
-    assert len(os.listdir(clean_dir)) == 1
-    assert len(os.listdir(attachments_dir)) == 6
-    assert expected_email_filename in os.listdir(clean_dir)
+    clean_files = [f.name for f in clean_path.iterdir()]
+    attachment_files = [f.name for f in attachments_path.iterdir()]
+    
+    assert len(clean_files) == 1
+    assert len(attachment_files) == 6
+    assert expected_email_filename in clean_files
     for filename in expected_attachment_filenames:
-        assert filename in os.listdir(attachments_dir)
+        assert filename in attachment_files
