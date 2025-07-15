@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-import os
+from pathlib import Path
 
 from decouple import config
 from flask import Flask, flash, redirect, render_template, request, url_for
@@ -34,21 +34,18 @@ class DirConfig:
     Store dir configuration in a class to allow easy access by emails.py
     """
 
-    RAW_EMAIL_DIR = config("RAW_EMAIL_DIR")
-    CLEAN_EMAIL_DIR = config("CLEAN_EMAIL_DIR")
-    ATTACHMENTS_DIR = config("ATTACHMENTS_DIR")
+    RAW_EMAIL_DIR = Path(config("RAW_EMAIL_DIR"))
+    CLEAN_EMAIL_DIR = Path(config("CLEAN_EMAIL_DIR"))
+    ATTACHMENTS_DIR = Path(config("ATTACHMENTS_DIR"))
 
 
 app.dir_config = DirConfig()
 
 
 def create_dirs(config):
-    if not os.path.exists(config.RAW_EMAIL_DIR):
-        os.makedirs(config.RAW_EMAIL_DIR)
-    if not os.path.exists(config.CLEAN_EMAIL_DIR):
-        os.makedirs(config.CLEAN_EMAIL_DIR)
-    if not os.path.exists(config.ATTACHMENTS_DIR):
-        os.makedirs(config.ATTACHMENTS_DIR)
+    config.RAW_EMAIL_DIR.mkdir(parents=True, exist_ok=True)
+    config.CLEAN_EMAIL_DIR.mkdir(parents=True, exist_ok=True)
+    config.ATTACHMENTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # Redis configuration
@@ -90,9 +87,10 @@ def delete_files():
     clean_dir = app.dir_config.CLEAN_EMAIL_DIR
     raw_dir = app.dir_config.RAW_EMAIL_DIR
 
-    attachments = os.listdir(attachments_dir)
-    clean_emails = [email for email in os.listdir(clean_dir) if email.endswith(".txt")]
-    raw_emails = [email for email in os.listdir(raw_dir) if email.endswith(".eml")]
+    attachments = list(attachments_dir.iterdir()) if attachments_dir.exists() else []
+    clean_emails = [email for email in clean_dir.iterdir() if email.suffix == ".txt"] if clean_dir.exists() else []
+    raw_emails = [email for email in raw_dir.iterdir() if email.suffix == ".eml"] if raw_dir.exists() else []
+
     deleted_emails = 0
     deleted_attachments = 0
 
@@ -100,24 +98,21 @@ def delete_files():
         flash("No attachments found.")
     else:
         for attachment in attachments:
-            attachment_path = os.path.join(attachments_dir, attachment)
-            os.remove(attachment_path)
+            attachment.unlink()
             deleted_attachments += 1
 
     if not clean_emails:
         flash("No cleaned emails found.")
     else:
         for email in clean_emails:
-            clean_path = os.path.join(clean_dir, email)
-            os.remove(clean_path)
+            email.unlink()
             deleted_emails += 1
 
     if not raw_emails:
         flash("No raw emails found.")
     else:
         for email in raw_emails:
-            raw_path = os.path.join(raw_dir, email)
-            os.remove(raw_path)
+            email.unlink()
 
     if deleted_emails and deleted_attachments:
         flash(f"Deleted {deleted_emails} emails and {deleted_attachments} attachments.")
